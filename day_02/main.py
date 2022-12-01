@@ -8,7 +8,7 @@ def execute_day(part: int):
     conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
 
     with conn as cursor:
-        with open(dirname(__file__) + f"part{part}.sql", "r", encoding="utf-8") as f:
+        with open(dirname(__file__) + f"/part{part}.sql", "r", encoding="utf-8") as f:
             return cursor.execute(f.read())
 
 
