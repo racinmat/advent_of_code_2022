@@ -19,6 +19,4 @@ Run `python init.py` to generate base parts of the code base for each day.
 
 In order to download the input data programatically, log in to adventofcode.com, and then grab the cookie token and put it to `secret.yaml`.
 
-Make sure you update the `advent-of-code-data` python package using `pip install --upgrade advent-of-code-data`.
-
-Run benchmark using `benchmark.jl`
+Run the db by `docker-compose up -d`
