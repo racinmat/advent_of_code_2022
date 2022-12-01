@@ -18,7 +18,7 @@ def add_or_new(arr, val):
 
 def execute_part1():
     with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
+        # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
         data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
     return max(reduce(add_or_new, data, [0]))
     # return max(map(sum, np.split(np.array(data), np.where(np.array(data) == 0)[0][1:])))
