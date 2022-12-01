@@ -17,18 +17,30 @@ def add_or_new(arr, val):
 
 
 def execute_part1():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
-        data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
-    return max(reduce(add_or_new, data, [0]))
+    conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
+
+    with conn.cursor() as cursor:
+        with open(Path(dirname(__file__)) / f"part1.sql", "r", encoding="utf-8") as f:
+            cursor.execute(f.read())
+            return cursor.fetchone()[0]
+    # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
+    #     # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
+    #     data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
+    # return max(reduce(add_or_new, data, [0]))
     # return max(map(sum, np.split(np.array(data), np.where(np.array(data) == 0)[0][1:])))
 
 
 def execute_part2():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
-        data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
-    return sum(nlargest(3, reduce(add_or_new, data, [0])))
+    conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
+
+    with conn.cursor() as cursor:
+        with open(Path(dirname(__file__)) / f"part2.sql", "r", encoding="utf-8") as f:
+            cursor.execute(f.read())
+            return cursor.fetchone()[0]
+    # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
+    #     # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
+    #     data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
+    # return sum(nlargest(3, reduce(add_or_new, data, [0])))
 
 
 if __name__ == '__main__':
