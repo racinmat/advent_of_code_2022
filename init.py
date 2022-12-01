@@ -1,11 +1,12 @@
 import os
 import os.path as osp
+
 for i in range(1, 26):
-    os.makedirs(f'day_{i:02d}', exist_ok=True)
-    input_name = f'day_{i:02d}/input.txt'
+    os.makedirs(f'days/day_{i:02d}', exist_ok=True)
+    input_name = f'days/day_{i:02d}/input.txt'
     if not osp.isfile(input_name):
         open(input_name, 'w+').close()
-    with open(f'day_{i:02d}/main.sql', 'w+') as f:
+    with open(f'days/day_{i:02d}/part1.sql', 'w+') as f:
         f.write(f"""\
 DROP TABLE IF EXISTS dec{i:02d};
 
@@ -14,13 +15,26 @@ CREATE TABLE dec{i:02d} (
     value bigint NOT NULL
 );
 
-\COPY dec01 (value) FROM '2022/dec{i:02d}/input.txt'
-VACUUM ANALYZE dec01;
+COPY dec{i:02d} (value) FROM '/aoc/days/day_{i:02d}/input.txt';
+VACUUM ANALYZE dec{i:02d};
 """)
-    with open(f'day_{i:02d}/main.py', 'w+') as f:
+    with open(f'days/day_{i:02d}/part2.sql', 'w+') as f:
+        f.write(f"""\
+DROP TABLE IF EXISTS dec{i:02d};
+
+CREATE TABLE dec{i:02d} (
+    line_number bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
+    value bigint NOT NULL
+);
+
+COPY dec{i:02d} (value) FROM '/aoc/days/day_{i:02d}/input.txt';
+VACUUM ANALYZE dec{i:02d};
+""")
+    with open(f'days/day_{i:02d}/main.py', 'w+') as f:
         f.write(f"""\
 import time
 from os.path import dirname
+from pathlib import Path
 import psycopg2
 from misc import read_day, submit_day
 
@@ -28,8 +42,8 @@ from misc import read_day, submit_day
 def execute_day(part: int):
     conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
 
-    with conn as cursor:
-        with open(dirname(__file__) + f"/part{{part}}.sql", "r", encoding="utf-8") as f:
+    with conn.cursor() as cursor:
+        with open(Path(dirname(__file__)) / f"part{{part}}.sql", "r", encoding="utf-8") as f:
             return cursor.execute(f.read())
 
 

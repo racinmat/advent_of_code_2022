@@ -9,7 +9,7 @@ with open(dirname(__file__) + '/secret.yaml', 'r') as f:
 
 
 def read_day(i: int):
-    input_path = Path(dirname(__file__)) / f'day_{i:02d}' / 'input.txt'
+    input_path = Path(dirname(__file__)) / 'days' / f'day_{i:02d}' / 'input.txt'
     with open(input_path, 'r', encoding='utf-8') as f:
         in_data = f.read()
     if in_data == '':

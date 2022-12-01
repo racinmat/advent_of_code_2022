@@ -1,31 +1,80 @@
+import importlib
 import time
-
+import timeit
+import sys
 import psycopg2
 
 from misc import read_day, submit_day
 
+
+
+import days.day_01.main
+import days.day_02.main
+import days.day_03.main
+import days.day_04.main
+import days.day_05.main
+import days.day_06.main
+import days.day_07.main
+import days.day_08.main
+import days.day_09.main
+import days.day_10.main
+import days.day_11.main
+import days.day_12.main
+import days.day_13.main
+import days.day_14.main
+import days.day_15.main
+import days.day_16.main
+import days.day_17.main
+import days.day_18.main
+import days.day_19.main
+import days.day_20.main
+import days.day_21.main
+import days.day_22.main
+import days.day_23.main
+import days.day_24.main
+import days.day_25.main
+
 max_day = 1
 
 
-def execute_day(d: int, part: int):
-    conn = psycopg2.connect(f"dbname=dec{d:02d} user=postgres password=example")
+def prettytime(t):
+    t = t * 10e9
+    if t < 1e3:
+        value, units = t, "ns"
+    elif t < 1e6:
+        value, units = t / 1e3, "μs"
+    elif t < 1e9:
+        value, units = t / 1e6, "ms"
+    else:
+        value, units = t / 1e9, "s"
 
-    with conn as cursor:
-        with open(f"day{d:02d}/part{part}.sql", "r", encoding="utf-8") as f:
-            return cursor.execute(f.read())
+    return f"{value:.3f} {units}"
+
+def execute_day(d: int, part: int):
+    main = sys.modules[f'days.day_{d:02d}'].main
+    if part == 1:
+        main.execute_part1()
+    elif part == 2:
+        main.execute_part2()
 
 
 for day in range(1, max_day+1):
     read_day(day)
-    tic = time.perf_counter()
-    res1 = execute_day(day, 1)
-    tac = time.perf_counter()
-    res2 = execute_day(day, 2)
-    toc = time.perf_counter()
+    execute_day(day, 1)
+    num_iterations = 100
+    time1 = timeit.timeit(f'execute_day({day}, 1)', globals=globals(), number=num_iterations) / num_iterations
+    time2 = timeit.timeit(f'execute_day({day}, 2)', globals=globals(), number=num_iterations) / num_iterations
+    # tic = time.perf_counter()
+    # res1 = execute_day(day, 1)
+    # tac = time.perf_counter()
+    # time1 = tac - tic
+    # res2 = execute_day(day, 2)
+    # toc = time.perf_counter()
+    # time2 = toc - tac
     # submit_day(res1, day, 1)
     # submit_day(res2, day, 2)
-    print(f"day {day:02d} part 1 in {tac - tic:0.4f} seconds")
-    print(f"day {day:02d} part 2 in {toc - tac:0.4f} seconds")
+    print(f"day {day:02d} part 1 in {prettytime(time1)}")
+    print(f"day {day:02d} part 2 in {prettytime(time2)}")
 
 
 # MAX_Y_VALUE = 1

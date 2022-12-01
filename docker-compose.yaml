@@ -7,5 +7,6 @@ services:
       POSTGRES_PASSWORD: example
     volumes:
       - ./db-data:/var/lib/postgresql/data
+      - ./days:/aoc/days
     ports:
       - "5432:5432"
