@@ -7,8 +7,6 @@ for i in range(1, 26):
         open(input_name, 'w+').close()
     with open(f'day_{i:02d}/main.sql', 'w+') as f:
         f.write(f"""\
-CREATE SCHEMA IF NOT EXISTS aoc2022;
-SET SCHEMA 'aoc2022';
 DROP TABLE IF EXISTS dec{i:02d};
 
 CREATE TABLE dec{i:02d} (
@@ -22,15 +20,16 @@ VACUUM ANALYZE dec01;
     with open(f'day_{i:02d}/main.py', 'w+') as f:
         f.write(f"""\
 import time
+from os.path import dirname
 import psycopg2
 from misc import read_day, submit_day
 
 
 def execute_day(part: int):
-    conn = psycopg2.connect(f"dbname=dec{i:02d} user=postgres password=example")
+    conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
 
     with conn as cursor:
-        with open(f"day{i:02d}/part{{part}}.sql", "r", encoding="utf-8") as f:
+        with open(dirname(__file__) + f"part{{part}}.sql", "r", encoding="utf-8") as f:
             return cursor.execute(f.read())
 
 

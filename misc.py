@@ -1,16 +1,20 @@
+from os.path import dirname
+from pathlib import Path
+
 import yaml
 from aocd import get_data, submit
 
-with open('secret.yaml', 'r') as f:
+with open(dirname(__file__) + '/secret.yaml', 'r') as f:
     token = yaml.safe_load(f)['session']
 
 
 def read_day(i: int):
-    with open(f'day_{i:02d}/input.txt', 'r', encoding='utf-8') as f:
+    input_path = Path(dirname(__file__)) / f'day_{i:02d}' / 'input.txt'
+    with open(input_path, 'r', encoding='utf-8') as f:
         in_data = f.read()
     if in_data == '':
-        in_data = get_data(token, day=i, year=2021)
-        with open(f'day_{i:02d}/input.txt', 'w', encoding='utf-8') as f:
+        in_data = get_data(token, day=i, year=2022)
+        with open(input_path, 'w', encoding='utf-8') as f:
             f.write(in_data)
     return in_data
 
