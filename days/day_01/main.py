@@ -4,7 +4,7 @@ from heapq import nlargest
 from os.path import dirname
 from pathlib import Path
 import psycopg2
-from misc import read_day, submit_day
+from misc import read_day, submit_day, prettytime
 import numpy as np
 
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    # submit_day(res1, 1, 1)
-    # submit_day(res2, 1, 2)
-    print(f"day 01 part 1 in {(tac - tic) * 1000:0.6f} ms, answer: {res1}")
-    print(f"day 01 part 2 in {(toc - tac) * 1000:0.6f} ms, answer: {res2}")
+    submit_day(res1, 1, 1)
+    submit_day(res2, 1, 2)
+    print(f"day 01 part 1 in {prettytime(tac - tic)}, answer: {res1}")
+    print(f"day 01 part 2 in {prettytime(toc - tac)}, answer: {res2}")

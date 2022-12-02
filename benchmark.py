@@ -4,9 +4,7 @@ import timeit
 import sys
 import psycopg2
 
-from misc import read_day, submit_day
-
-
+from misc import read_day, submit_day, prettytime
 
 import days.day_01.main
 import days.day_02.main
@@ -37,19 +35,6 @@ import days.day_25.main
 max_day = 1
 
 
-def prettytime(t):
-    t = t * 10e9
-    if t < 1e3:
-        value, units = t, "ns"
-    elif t < 1e6:
-        value, units = t / 1e3, "μs"
-    elif t < 1e9:
-        value, units = t / 1e6, "ms"
-    else:
-        value, units = t / 1e9, "s"
-
-    return f"{value:.3f} {units}"
-
 def execute_day(d: int, part: int):
     main = sys.modules[f'days.day_{d:02d}'].main
     if part == 1:
@@ -58,7 +43,7 @@ def execute_day(d: int, part: int):
         main.execute_part2()
 
 
-for day in range(1, max_day+1):
+for day in range(1, max_day + 1):
     read_day(day)
     execute_day(day, 1)
     num_iterations = 100
@@ -75,7 +60,6 @@ for day in range(1, max_day+1):
     # submit_day(res2, day, 2)
     print(f"day {day:02d} part 1 in {prettytime(time1)}")
     print(f"day {day:02d} part 2 in {prettytime(time2)}")
-
 
 # MAX_Y_VALUE = 1
 #

@@ -22,3 +22,17 @@ def read_day(i: int):
 def submit_day(answer, i: int, part: int):
     parts = {1: 'a', 2: 'b'}
     return submit(answer, part=parts[part], day=i, year=2022, session=token)
+
+
+def prettytime(t):
+    t = t * 10e9
+    if t < 1e3:
+        value, units = t, "ns"
+    elif t < 1e6:
+        value, units = t / 1e3, "μs"
+    elif t < 1e9:
+        value, units = t / 1e6, "ms"
+    else:
+        value, units = t / 1e9, "s"
+
+    return f"{value:.3f} {units}"
