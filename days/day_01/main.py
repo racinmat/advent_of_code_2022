@@ -16,6 +16,16 @@ def add_or_new(arr, val):
     return arr
 
 
+def add_or_new2(vals):
+    curr = 0
+    for i in vals:
+        if i == 0:
+            yield curr
+            curr = 0
+        else:
+            curr += i
+
+
 def execute_part1():
     conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
 
@@ -23,10 +33,17 @@ def execute_part1():
         with open(Path(dirname(__file__)) / f"part1.sql", "r", encoding="utf-8") as f:
             cursor.execute(f.read())
             return cursor.fetchone()[0]
+    # impl1
     # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-    #     # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
     #     data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
     # return max(reduce(add_or_new, data, [0]))
+    # impl2
+    # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
+    #     data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
+    # return max(add_or_new2(data))
+    # impl3
+    # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
+    #     data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
     # return max(map(sum, np.split(np.array(data), np.where(np.array(data) == 0)[0][1:])))
 
 
@@ -38,7 +55,6 @@ def execute_part2():
             cursor.execute(f.read())
             return cursor.fetchone()[0]
     # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-    #     # data = [0 if i == '\n' else int(i.strip()) for i in f.readlines()]
     #     data = (0 if i == '\n' else int(i.strip()) for i in f.readlines())
     # return sum(nlargest(3, reduce(add_or_new, data, [0])))
 
@@ -50,7 +66,7 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    submit_day(res1, 1, 1)
-    submit_day(res2, 1, 2)
+    # submit_day(res1, 1, 1)
+    # submit_day(res2, 1, 2)
     print(f"day 01 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 01 part 2 in {prettytime(toc - tac)}, answer: {res2}")

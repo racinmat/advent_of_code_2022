@@ -7,12 +7,12 @@ for i in range(1, 26):
     if not osp.isfile(input_name):
         open(input_name, 'w+').close()
     with open(f'days/day_{i:02d}/__init__.py', 'w+') as f:
-        f.write()
+        f.write('')
     with open(f'days/day_{i:02d}/part1.sql', 'w+') as f:
         f.write(f"""\
 DROP TABLE IF EXISTS dec{i:02d};
 
-CREATE TABLE dec{i:02d} (
+CREATE UNLOGGED TABLE dec{i:02d} (
     line_number bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
     value bigint NOT NULL
 );
@@ -24,7 +24,7 @@ VACUUM ANALYZE dec{i:02d};
         f.write(f"""\
 DROP TABLE IF EXISTS dec{i:02d};
 
-CREATE TABLE dec{i:02d} (
+CREATE UNLOGGED TABLE dec{i:02d} (
     line_number bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
     value bigint NOT NULL
 );
@@ -68,6 +68,6 @@ if __name__ == '__main__':
     toc = time.perf_counter()
     submit_day(res1, {i}, 1)
     submit_day(res2, {i}, 2)
-    print(f"day {i:O2d} part 1 in {{prettytime(tac - tic)}}, answer: {{res1}}")
-    print(f"day {i:O2d} part 2 in {{prettytime(toc - tac)}}, answer: {{res2}}")
+    print(f"day {i:02d} part 1 in {{prettytime(tac - tic)}}, answer: {{res1}}")
+    print(f"day {i:02d} part 2 in {{prettytime(toc - tac)}}, answer: {{res2}}")
 """)

@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS dec01;
 
-CREATE UNLOGGED TABLE dec01
-(
+CREATE UNLOGGED TABLE dec01 (
     line_number bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
     calories    text
 );
