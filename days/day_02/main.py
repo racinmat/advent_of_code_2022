@@ -11,16 +11,16 @@ def execute_part1():
     with conn.cursor() as cursor:
         with open(Path(dirname(__file__)) / f"part1.sql", "r", encoding="utf-8") as f:
             cursor.execute(f.read())
-            return cursor.fetchone()[0]
+            # return cursor.fetchone()[0]
 
 
 def execute_part2():
     conn = psycopg2.connect(f"dbname=postgres user=postgres password=example")
 
-    with conn.cursor() as cursor:
-        with open(Path(dirname(__file__)) / f"part2.sql", "r", encoding="utf-8") as f:
-            cursor.execute(f.read())
-            return cursor.fetchone()[0]
+    # with conn.cursor() as cursor:
+    #     with open(Path(dirname(__file__)) / f"part2.sql", "r", encoding="utf-8") as f:
+    #         cursor.execute(f.read())
+    #         return cursor.fetchone()[0]
 
 
 if __name__ == '__main__':
@@ -30,7 +30,7 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    submit_day(res1, 2, 1)
-    submit_day(res2, 2, 2)
+    # submit_day(res1, 2, 1)
+    # submit_day(res2, 2, 2)
     print(f"day 02 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 02 part 2 in {prettytime(toc - tac)}, answer: {res2}")
