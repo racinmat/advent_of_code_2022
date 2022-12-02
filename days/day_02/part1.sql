@@ -6,6 +6,7 @@ CREATE UNLOGGED TABLE dec02 (
 );
 
 COPY dec02 (orig_text) FROM '/aoc/days/day_02/input.txt';
+-- COPY dec02 (orig_text) FROM '/aoc/days/day_02/test_input.txt';
 -- VACUUM ANALYZE dec02;
 
 DROP TABLE IF EXISTS d02_rps;
@@ -18,9 +19,12 @@ CREATE UNLOGGED TABLE d02_rps
 );
 
 INSERT INTO d02_rps
+-- a,x = rock
+-- b,y = paper
+-- c,z = scissors
 values ('A', 'X', 1 + 3),
-       ('A', 'Y', 2 + 0),
-       ('A', 'Z', 3 + 6),
+       ('A', 'Y', 2 + 6),
+       ('A', 'Z', 3 + 0),
        ('B', 'X', 1 + 0),
        ('B', 'Y', 2 + 3),
        ('B', 'Z', 3 + 6),
