@@ -20,7 +20,7 @@ def execute_part2():
         with conn.cursor() as cursor:
             with open(Path(dirname(__file__)) / f"part2.sql", "r", encoding="utf-8") as f:
                 cursor.execute(f.read())
-                return cursor.fetchone()[0]
+                # return cursor.fetchone()[0]
 
 
 if __name__ == '__main__':
@@ -31,6 +31,6 @@ if __name__ == '__main__':
     res2 = execute_part2()
     toc = time.perf_counter()
     submit_day(res1, 3, 1)
-    submit_day(res2, 3, 2)
+    # submit_day(res2, 3, 2)
     print(f"day 03 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 03 part 2 in {prettytime(toc - tac)}, answer: {res2}")
