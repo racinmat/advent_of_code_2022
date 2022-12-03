@@ -1,6 +1,7 @@
-# Advent of Code 2022 in Julia
+# Advent of Code 2022 in Python or SQL
 
-Solutions of annual coding challenge https://adventofcode.com/ written in PostgreSQL and Python.
+Solutions of annual coding challenge https://adventofcode.com/ written in PostgreSQL and Python 
+(python as a fallback if SQL would be too annoying).
 
 Benchmarks
 
