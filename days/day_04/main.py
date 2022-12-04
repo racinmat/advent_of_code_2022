@@ -30,7 +30,7 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    submit_day(res1, 4, 1)
+    # submit_day(res1, 4, 1)
     submit_day(res2, 4, 2)
     print(f"day 04 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 04 part 2 in {prettytime(toc - tac)}, answer: {res2}")

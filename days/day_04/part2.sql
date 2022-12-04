@@ -6,4 +6,25 @@ CREATE UNLOGGED TABLE dec04 (
 );
 
 COPY dec04 (row_data) FROM '/aoc/days/day_04/input.txt';
-VACUUM ANALYZE dec04;
+-- COPY dec04 (row_data) FROM '/aoc/days/day_04/test_input.txt';
+-- VACUUM ANALYZE dec04;
+
+WITH ranges as (SELECT line_number,
+                       row_data,
+                       split_part(split_part(row_data, ',', 1), '-', 1)::int as e1_from,
+                       split_part(split_part(row_data, ',', 1), '-', 2)::int as e1_to,
+                       split_part(split_part(row_data, ',', 2), '-', 1)::int as e2_from,
+                       split_part(split_part(row_data, ',', 2), '-', 2)::int as e2_to
+                from dec04
+                order by line_number),
+     intersections as (select row_data,
+                              e1_from,
+                              e1_to,
+                              e2_from,
+                              e2_to,
+                              e1_to < e2_from,
+                              e2_to < e1_from,
+                              1 - (e1_to < e2_from or e2_to < e1_from)::int as intersects
+                       from ranges)
+select sum(intersects) from intersections;
+-- select * from intersections;
