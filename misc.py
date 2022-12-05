@@ -25,7 +25,7 @@ def submit_day(answer, i: int, part: int):
 
 
 def prettytime(t):
-    t = t * 10e9
+    t = t * 1e9
     if t < 1e3:
         value, units = t, "ns"
     elif t < 1e6:
