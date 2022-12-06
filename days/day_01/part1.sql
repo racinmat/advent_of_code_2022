@@ -6,7 +6,6 @@ CREATE UNLOGGED TABLE dec01 (
 );
 
 COPY dec01 (calories) FROM '/aoc/days/day_01/input.txt';
--- VACUUM ANALYZE dec01;
 
 select max(a_sum)
 from (select sum(value) as a_sum

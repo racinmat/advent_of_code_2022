@@ -8,7 +8,6 @@ CREATE UNLOGGED TABLE dec04
 
 COPY dec04 (row_data) FROM '/aoc/days/day_04/input.txt';
 -- COPY dec04 (row_data) FROM '/aoc/days/day_04/test_input.txt';
--- VACUUM ANALYZE dec04;
 
 WITH ranges as (SELECT line_number,
                        row_data,

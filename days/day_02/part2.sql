@@ -7,7 +7,6 @@ CREATE UNLOGGED TABLE dec02 (
 
 COPY dec02 (orig_text) FROM '/aoc/days/day_02/input.txt';
 -- COPY dec02 (orig_text) FROM '/aoc/days/day_02/test_input.txt';
--- VACUUM ANALYZE dec02;
 
 DROP TABLE IF EXISTS d02_rps;
 

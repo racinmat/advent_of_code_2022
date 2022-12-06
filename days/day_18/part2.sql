@@ -6,4 +6,4 @@ CREATE UNLOGGED TABLE dec18 (
 );
 
 COPY dec18 (row_data) FROM '/aoc/days/day_18/input.txt';
-VACUUM ANALYZE dec18;
+

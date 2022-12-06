@@ -30,7 +30,7 @@ CREATE UNLOGGED TABLE dec{i:02d} (
 );
 
 COPY dec{i:02d} (row_data) FROM '/aoc/days/day_{i:02d}/input.txt';
-VACUUM ANALYZE dec{i:02d};
+
 """)
     with open(f'days/day_{i:02d}/main.py', 'w+') as f:
         f.write(f"""\
