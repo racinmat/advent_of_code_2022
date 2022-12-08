@@ -28,10 +28,8 @@ def build_tree(commands: list[list[str]]) -> Tree:
         elif command == '$ ls':
             for obj in i:
                 res1, res2 = obj.split(' ')
-                if res1 == 'dir':
-                    tree.create_node(res2, parent=cur_node, data={'type': 'dir'})
-                else:
-                    tree.create_node(res2, parent=cur_node, data={'type': 'file', 'size': int(res1)})
+                tree.create_node(res2, parent=cur_node,
+                                 data={'type': 'dir'} if res1 == 'dir' else {'type': 'file', 'size': int(res1)})
         elif command.startswith('$ cd '):
             target_dir = command.replace('$ cd ', '')
             if target_dir == '..':
@@ -57,7 +55,6 @@ def execute_part1():
         data = f.read().split('\n')
     commands = reduce(split2commands, data, [])
     tree = build_tree(commands)
-    print(tree)
     total_size(tree)
     nodes = tree.filter_nodes(lambda x: x.data['size'] <= 100000 and x.data['type'] == 'dir')
     return sum(n.data['size'] for n in nodes)
@@ -65,11 +62,10 @@ def execute_part1():
 
 def execute_part2():
     with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-    # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+        # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     commands = reduce(split2commands, data, [])
     tree = build_tree(commands)
-    print(tree)
     tot_size = total_size(tree)
     max_size = 70000000
     needed_free_size = 30000000
