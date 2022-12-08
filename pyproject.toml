@@ -10,6 +10,7 @@ aocd = "^0.1"
 psycopg2 = "^2.9.5"
 PyYAML = "^6.0"
 numpy = "^1.23.5"
+treelib = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
 
