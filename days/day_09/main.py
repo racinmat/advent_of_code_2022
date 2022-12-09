@@ -76,14 +76,14 @@ class Point:
         return Point(math.floor(self.x) if self.x < 0 else math.ceil(self.x),
                      math.floor(self.y) if self.y < 0 else math.ceil(self.y))
 
+directions = {
+    'R': Point(0, 1),
+    'L': Point(0, -1),
+    'U': Point(1, 0),
+    'D': Point(-1, 0),
+}
 
 def run_part1(moves: list):
-    directions = {
-        'R': Point(0, 1),
-        'L': Point(0, -1),
-        'U': Point(1, 0),
-        'D': Point(-1, 0),
-    }
     head_pos = Point(0, 0)
     tail_pos = Point(0, 0)
     # positions = [tail_pos]
@@ -117,16 +117,9 @@ def execute_part2():
     # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     moves = [(n[0], int(n[1])) for d in data if (n := d.split(' '))]
-    directions = {
-        'R': Point(0, 1),
-        'L': Point(0, -1),
-        'U': Point(1, 0),
-        'D': Point(-1, 0),
-    }
     # grid = np.zeros((5, 6), dtype=int)
     head_pos = Point(0, 0)
     tail_positions = [Point(0, 0) for i in range(9)]
-    positions = {tail_positions[0]}
     t_positions = {tail_positions[0]}
     # grid[tuple(tail_positions[0])] = 10
     for direction, length in moves:
@@ -140,14 +133,10 @@ def execute_part2():
                 tail_pos = t
                 prev_tail = tail_pos
                 if a_head_pos.dist(tail_pos) > 1:
-                    # if head has moved diagonally, the rules are different
-                    if moved_diagonally:
-                        # prev_head_pos = tail_pos + (a_head_pos - tail_pos).ceildiv(2)
-                        # prev_head_pos = tail_pos + math.ceil((a_head_pos - tail_pos) / 2)
+                    if moved_diagonally:    # if head has moved diagonally, the rules are different
                         prev_head_pos = tail_pos + ((a_head_pos - tail_pos) / 2).round_away_from_zero()
                     tail_pos = prev_head_pos
                     tail_positions[j] = tail_pos
-                    positions.add(tail_pos)
                     if j == 8:
                         t_positions.add(tail_pos)
                     # grid[tuple(tail_pos)] = j + 1
