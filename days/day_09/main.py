@@ -1,3 +1,4 @@
+import math
 import time
 from os.path import dirname
 from pathlib import Path
@@ -22,13 +23,22 @@ class Point:
         self.y = y
 
     def __add__(self, other):
-        return Point(self.x + other.x, self.y + other.y)
+        if isinstance(other, Point):
+            return Point(self.x + other.x, self.y + other.y)
+        else:
+            return Point(self.x + other, self.y + other)
+
+    def __sub__(self, other):
+        if isinstance(other, Point):
+            return Point(self.x - other.x, self.y - other.y)
+        else:
+            return Point(self.x - other, self.y - other)
 
     def dist(self, other):
         return max(abs(self.x - other.x), abs(self.y - other.y))
 
     def man_dist(self, other):
-        return sum(abs(self.x - other.x), abs(self.y - other.y))
+        return abs(self.x - other.x) + abs(self.y - other.y)
 
     def __iter__(self):
         yield self.x
@@ -42,6 +52,29 @@ class Point:
 
     def __repr__(self) -> str:
         return f'Point({self.x},{self.y})'
+
+    def __floordiv__(self, other):
+        return Point(self.x // other, self.y // other)
+
+    def __truediv__(self, other):
+        return Point(self.x / other, self.y / other)
+
+    def __neg__(self):
+        return Point(-self.x, -self.y)
+
+    def ceildiv(self, other):
+        # https://stackoverflow.com/a/72864305/5224881
+        return -(-self // 2)
+
+    def __ceil__(self):
+        return Point(math.ceil(self.x), math.ceil(self.y))
+
+    def __floor__(self):
+        return Point(math.floor(self.x), math.floor(self.y))
+
+    def round_away_from_zero(self):
+        return Point(math.floor(self.x) if self.x < 0 else math.ceil(self.x),
+                     math.floor(self.y) if self.y < 0 else math.ceil(self.y))
 
 
 def run_part1(moves: list):
@@ -80,8 +113,8 @@ def execute_part1():
 
 
 def execute_part2():
-    # with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-    with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
+    # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     moves = [(n[0], int(n[1])) for d in data if (n := d.split(' '))]
     directions = {
@@ -90,32 +123,38 @@ def execute_part2():
         'U': Point(1, 0),
         'D': Point(-1, 0),
     }
-    grid = np.zeros((5, 6), dtype=int)
+    # grid = np.zeros((5, 6), dtype=int)
     head_pos = Point(0, 0)
     tail_positions = [Point(0, 0) for i in range(9)]
     positions = {tail_positions[0]}
     t_positions = {tail_positions[0]}
-    grid[tuple(tail_positions[0])] = 10
+    # grid[tuple(tail_positions[0])] = 10
     for direction, length in moves:
         vec = directions[direction]
         for i in range(length):
             prev_head_pos = head_pos
             head_pos += vec
             a_head_pos = head_pos
+            moved_diagonally = False
             for j, t in enumerate(tail_positions):
                 tail_pos = t
                 prev_tail = tail_pos
-                # if head has moved diagonally, the rules are different
                 if a_head_pos.dist(tail_pos) > 1:
+                    # if head has moved diagonally, the rules are different
+                    if moved_diagonally:
+                        # prev_head_pos = tail_pos + (a_head_pos - tail_pos).ceildiv(2)
+                        # prev_head_pos = tail_pos + math.ceil((a_head_pos - tail_pos) / 2)
+                        prev_head_pos = tail_pos + ((a_head_pos - tail_pos) / 2).round_away_from_zero()
                     tail_pos = prev_head_pos
                     tail_positions[j] = tail_pos
                     positions.add(tail_pos)
                     if j == 8:
                         t_positions.add(tail_pos)
-                    grid[tuple(tail_pos)] = j+1
+                    # grid[tuple(tail_pos)] = j + 1
+                    moved_diagonally = tail_pos.man_dist(prev_tail) > 1
                 a_head_pos = tail_pos
                 prev_head_pos = prev_tail
-    return positions
+    return len(t_positions)
 
 
 if __name__ == '__main__':
