@@ -7,16 +7,17 @@ import numpy as np
 from misc import read_day, submit_day, prettytime
 
 
-def count_strength(cycle, register):
+def add_strength(cycle, register, tot_strength):
     if (cycle - 20) % 40 == 0:
-        return cycle * register
-    return 0
+        return tot_strength + cycle * register
+    return tot_strength
 
 
 def tick(cycle: int, fun: callable):
     cycle += 1
     return cycle, fun(cycle)
 
+# def execute_instructions(instructions):
 
 def execute_part1():
     input_file = "input.txt"
@@ -29,13 +30,10 @@ def execute_part1():
     for instruction in data:
         match instruction.split(' '):
             case ['noop']:
-                cycle, strength = tick(cycle, partial(count_strength, register=register))
-                tot_strength += strength
+                cycle, tot_strength = tick(cycle, partial(add_strength, register=register, tot_strength=tot_strength))
             case ['addx', x] if re.match(r'-?\d+', x):
-                cycle, strength = tick(cycle, partial(count_strength, register=register))
-                tot_strength += strength
-                cycle, strength = tick(cycle, partial(count_strength, register=register))
-                tot_strength += strength
+                cycle, tot_strength = tick(cycle, partial(add_strength, register=register, tot_strength=tot_strength))
+                cycle, tot_strength = tick(cycle, partial(add_strength, register=register, tot_strength=tot_strength))
                 register += int(x)
         # print(f'{instruction=}, {cycle=}, {register=}, {tot_strength=}')
     return tot_strength
@@ -78,13 +76,3 @@ if __name__ == '__main__':
     # submit_day(res2, 10, 2)
     print(f"day 10 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 10 part 2 in {prettytime(toc - tac)}, answer: {res2}")
-
-# b'###  #     ##  #### #  #  ##  ####  ##  '
-# b'#  # #    #  # #    # #  #  #    # #  # '
-# b'#  # #    #    ###  ##   #  #   #  #    '
-# b'###  #    # ## #    # #  ####  #   # ## '
-# b'#    #    #  # #    # #  #  # #    #  # '
-# b'#    ####  ### #    #  # #  # ####  ### '
-
-# day 10 part 1 in 763.600 μs, answer: 15880
-# day 10 part 2 in 1.855 ms, answer: PLGFKAZG
