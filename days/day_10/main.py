@@ -1,6 +1,5 @@
 import re
 import time
-from functools import partial
 from os.path import dirname
 from pathlib import Path
 import numpy as np
@@ -12,58 +11,50 @@ def add_strength(cycle, register, tot_strength):
         return tot_strength + cycle * register
     return tot_strength
 
-
-def tick(cycle: int, fun: callable):
-    cycle += 1
-    return cycle, fun(cycle)
-
-# def execute_instructions(instructions):
+def execute_instructions(instructions, register, perform_tick):
+    for instruction in instructions:
+        match instruction.split(' '):
+            case ['noop']:
+                register = perform_tick(register)
+            case ['addx', x] if re.match(r'-?\d+', x):
+                register = perform_tick(register)
+                register = perform_tick(register)
+                register += int(x)
+    return register
 
 def execute_part1():
     input_file = "input.txt"
     # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
-    cycle = 0
-    register = 1
-    tot_strength = 0
-    for instruction in data:
-        match instruction.split(' '):
-            case ['noop']:
-                cycle, tot_strength = tick(cycle, partial(add_strength, register=register, tot_strength=tot_strength))
-            case ['addx', x] if re.match(r'-?\d+', x):
-                cycle, tot_strength = tick(cycle, partial(add_strength, register=register, tot_strength=tot_strength))
-                cycle, tot_strength = tick(cycle, partial(add_strength, register=register, tot_strength=tot_strength))
-                register += int(x)
-        # print(f'{instruction=}, {cycle=}, {register=}, {tot_strength=}')
+    cycle, register, tot_strength = 0, 1, 0
+    def perform_tick(register):
+        nonlocal cycle, tot_strength
+        cycle += 1
+        tot_strength = add_strength(cycle, register, tot_strength)
+        return register
+    execute_instructions(data, register, perform_tick)
     return tot_strength
 
-
-def draw_grid(cycle, register, grid):
+def draw2grid(cycle, register, grid):
     grid[np.unravel_index(cycle, grid.shape)] = '#' if register - 1 <= (cycle % 40) <= register + 1 else '.'
-
 
 def execute_part2():
     input_file = "input.txt"
     # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
-    cycle = -1
-    register = 1
-    grid = np.chararray((6, 40), itemsize=1)
+    cycle, register, grid = 0, 1, np.chararray((6, 40), itemsize=1)
     grid[:] = ' '
-    for instruction in data:
-        match instruction.split(' '):
-            case ['noop']:
-                cycle, _ = tick(cycle, partial(draw_grid, register=register, grid=grid))
-            case ['addx', x] if re.match(r'-?\d+', x):
-                cycle, _ = tick(cycle, partial(draw_grid, register=register, grid=grid))
-                cycle, _ = tick(cycle, partial(draw_grid, register=register, grid=grid))
-                register += int(x)
+    def perform_tick(register):
+        nonlocal cycle, grid
+        draw2grid(cycle, register, grid)
+        cycle += 1
+        return register
+    execute_instructions(data, register, perform_tick)
     grid[grid == b'.'] = ' '
     np.apply_along_axis(lambda x: print(x.tostring()), axis=1, arr=grid)
     return 'PLGFKAZG'
-
 
 if __name__ == '__main__':
     read_day(10)
