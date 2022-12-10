@@ -102,8 +102,9 @@ def run_part1(moves: list):
 
 def execute_part1():
     # I tried numba, but set of jit classes does not work and putting it to list is still very slow
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    input_file = "input.txt"
+    # input_file = ftest_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     moves = [(n[0], int(n[1])) for d in data if (n := d.split(' '))]
     # print(len(positions))
@@ -113,8 +114,9 @@ def execute_part1():
 
 
 def execute_part2():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-    # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     moves = [(n[0], int(n[1])) for d in data if (n := d.split(' '))]
     # grid = np.zeros((5, 6), dtype=int)

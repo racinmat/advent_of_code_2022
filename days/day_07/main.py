@@ -22,19 +22,19 @@ def build_tree(commands: list[list[str]]) -> Tree:
     for comm in commands:
         i = iter(comm)
         command = next(i)
-        if command == '$ cd /':
-            tree.create_node('/', data={'type': 'dir'})
-            cur_node = tree.root
-        elif command == '$ ls':
-            for obj in i:
-                res1, res2 = obj.split(' ')
-                tree.create_node(res2, parent=cur_node,
-                                 data={'type': 'dir'} if res1 == 'dir' else {'type': 'file', 'size': int(res1)})
-        elif command.startswith('$ cd '):
-            target_dir = command.replace('$ cd ', '')
-            if target_dir == '..':
+        match command:
+            case '$ cd /':
+                tree.create_node('/', data={'type': 'dir'})
+                cur_node = tree.root
+            case '$ ls':
+                for obj in i:
+                    res1, res2 = obj.split(' ')
+                    tree.create_node(res2, parent=cur_node,
+                                     data={'type': 'dir'} if res1 == 'dir' else {'type': 'file', 'size': int(res1)})
+            case '$ cd ..':
                 cur_node = tree.parent(cur_node).identifier
-            else:
+            case com if com.startswith('$ cd '):
+                target_dir = com.replace('$ cd ', '')
                 cur_node = next(filter(lambda x: x.tag == target_dir, tree.children(cur_node))).identifier
     return tree
 
@@ -50,8 +50,9 @@ def total_size(tree: Tree, root=None) -> int:
 
 
 def execute_part1():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     commands = reduce(split2commands, data, [])
     tree = build_tree(commands)
@@ -61,8 +62,9 @@ def execute_part1():
 
 
 def execute_part2():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     commands = reduce(split2commands, data, [])
     tree = build_tree(commands)
@@ -83,6 +85,8 @@ if __name__ == '__main__':
     res2 = execute_part2()
     toc = time.perf_counter()
     # submit_day(res1, 7, 1)
-    submit_day(res2, 7, 2)
+    # submit_day(res2, 7, 2)
     print(f"day 07 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 07 part 2 in {prettytime(toc - tac)}, answer: {res2}")
+# day 07 part 1 in 27.100 ms, answer: 1611443
+# day 07 part 2 in 13.876 ms, answer: 2086088

@@ -7,8 +7,9 @@ from misc import read_day, submit_day, prettytime
 
 
 def execute_part1():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-        # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     grid = np.array([list(map(int, d)) for d in data])
     from_top = np.maximum.accumulate(grid, axis=0)
@@ -25,8 +26,9 @@ def execute_part1():
 
 
 def execute_part2():
-    with open(Path(dirname(__file__)) / f"input.txt", "r", encoding="utf-8") as f:
-    # with open(Path(dirname(__file__)) / f"test_input.txt", "r", encoding="utf-8") as f:
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     grid = np.array([list(map(int, d)) for d in data])
     #     I haven't found way to do it all using numpy

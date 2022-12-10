@@ -10,10 +10,10 @@ Benchmarks
 
 Run this to create conda env:
 ```bash
-conda create -n aoc2022 python=3.9 poetry
+conda create -n aoc2022 -c conda-forge python=3.10 poetry
 conda activate aoc2022
 poetry init
-poetry add aocd psycopg2
+poetry add advent-of-code-data psycopg2 PyYAML treelib numpy
 ```
 
 Run `python init.py` to generate base parts of the code base for each day.
