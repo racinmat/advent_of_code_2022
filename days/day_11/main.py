@@ -75,7 +75,7 @@ def parse_monkeys(data: str):
                 m_true = int(m_true_str)
                 m_false = int(m_false_str)
 
-                print(f'{n=}, {items=}, {op=}, {update_f=}, {divisor=}, {m_true=}, {m_false=}')
+                # print(f'{n=}, {items=}, {op=}, {update_f=}, {divisor=}, {m_true=}, {m_false=}')
                 monkeys.append(Monkey(n, items, update_f, divisor, m_true, m_false))
     return monkeys
 
