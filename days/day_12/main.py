@@ -1,14 +1,9 @@
 import time
 from os.path import dirname
 from pathlib import Path
-
-import networkx.drawing
-
 from misc import read_day, submit_day, prettytime
 import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
-import copy
 
 
 def letter2height(x: str) -> int:
@@ -29,14 +24,8 @@ def build_graph(data):
     heights = nx.get_node_attributes(g, 'height')
     sx, sy = np.where(grid == 'S')
     ex, ey = np.where(grid == 'E')
-    e2remove = []
-    for n in g.nodes:
-        for n_from, n_to in g.edges(n):
-            height_from = heights[n_from]
-            height_to = heights[n_to]
-            if height_to - height_from > 1:
-                # print(f'large height between {n_from} and {n_to}, {abs(height_to - height_from)=}')
-                e2remove.append((n_from, n_to))
+    e2remove = [(n_from, n_to) for n in g.nodes for n_from, n_to in g.edges(n)
+                if heights[n_to] - heights[n_from] > 1]
     for e in e2remove:
         g.remove_edge(*e)
     return grid, g, sx, sy, ex, ey
@@ -48,9 +37,6 @@ def execute_part1():
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     grid, g, sx, sy, ex, ey = build_graph(data)
-    # plt.figure(figsize=(16, 16))
-    # nx.draw_networkx(g, pos=networkx.drawing.planar_layout(g))
-    # plt.show()
     return nx.shortest_path_length(g, (sx[0], sy[0]), (ex[0], ey[0]))
 
 
