@@ -2,18 +2,15 @@ import time
 from functools import cmp_to_key
 from os.path import dirname
 from pathlib import Path
-from typing import Optional
-
-from numba import njit
 
 from misc import read_day, submit_day, prettytime
 
 InputType = int | list[int] | list[list[int]] | list[list[list[int]]]
 
 
-# same signature as cmp so I can use the cmp_to_key
-# can't easily speed it up using numba, because it does not support the structural pattern matching
 def compare(inp1: InputType, inp2: InputType) -> int:
+    # same signature as cmp so I can use the cmp_to_key
+    # can't easily speed it up using numba, because it does not support the structural pattern matching
     match inp1, inp2:
         case int(), int():
             return inp1 - inp2
@@ -33,7 +30,6 @@ def execute_part1():
     # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n\n')
-    inputs = [list(map(eval, d.split('\n'))) for d in data]
     return sum(k + 1 for k, (i1, i2) in enumerate(map(eval, d.split('\n')) for d in data) if compare(i1, i2))
 
 
