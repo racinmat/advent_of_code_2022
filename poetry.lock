@@ -957,6 +957,32 @@ devenv = ["black", "pyroma", "pytest-cov", "zest.releaser"]
 test = ["pytest (>=4.3)", "pytest-mock (>=3.3)"]
 
 [[package]]
+name = "unified-planning"
+version = "0.4.2"
+description = "Unified Planning Framework"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "unified_planning-0.4.2-py3-none-any.whl", hash = "sha256:a920c3c92f0c748cb29d5abad0a1eb3f606930bae655b1d0d3247257b5dcc720"},
+    {file = "unified_planning-0.4.2.tar.gz", hash = "sha256:f801a6521a2b9c4007a0e76a9a8b80586bf2b96ecff5d355d9a20b12332c0e6b"},
+]
+
+[package.dependencies]
+networkx = "*"
+pyparsing = "*"
+
+[package.extras]
+dev = ["mypy", "pytest", "pytest-cov", "tarski[arithmetic]"]
+engines = ["tarski[arithmetic]", "up-enhsp (==0.0.5)", "up-fast-downward (==0.0.2)", "up-pyperplan (==0.2.0)", "up-tamer (==0.2.0)"]
+enhsp = ["up-enhsp (==0.0.5)"]
+fast-downward = ["up-fast-downward (==0.0.2)"]
+grpc = ["grpc-stubs", "grpcio", "grpcio-tools"]
+pyperplan = ["up-pyperplan (==0.2.0)"]
+tamer = ["up-tamer (==0.2.0)"]
+tarski = ["tarski[arithmetic]"]
+
+[[package]]
 name = "urllib3"
 version = "1.26.13"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -976,4 +1002,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "631d47680a49708a22d6652e6af8e2786016abd0e927b59954c989dadb680316"
+content-hash = "979897d1527e9d71068a84ea1a7ffff719829f9a4700824623919f6a81708274"
