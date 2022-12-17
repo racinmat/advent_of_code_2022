@@ -33,7 +33,7 @@ import days.day_23.main
 import days.day_24.main
 import days.day_25.main
 
-max_day = 5
+max_day = 13
 
 
 def execute_day(d: int, part: int):
@@ -45,10 +45,10 @@ def execute_day(d: int, part: int):
 
 
 # for day in range(1, max_day + 1):
-for day in range(5, max_day + 1):
+for day in range(13, max_day + 1):
     read_day(day)
     execute_day(day, 1)
-    num_iterations = 1000
+    num_iterations = 100
     # print(datetime.datetime.now())
     time1 = timeit.timeit(f'execute_day({day}, 1)', globals=globals(), number=num_iterations) / num_iterations
     time2 = timeit.timeit(f'execute_day({day}, 2)', globals=globals(), number=num_iterations) / num_iterations

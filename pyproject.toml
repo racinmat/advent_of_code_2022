@@ -11,6 +11,9 @@ psycopg2 = "^2.9.5"
 PyYAML = "^6.0"
 treelib = "^1.6.1"
 numpy = "^1.23.5"
+networkx = {extras = ["default"], version = "^2.8.8"}
+numba = "^0.56.4"
+unified-planning = "^0.4.2"
 
 [tool.poetry.dev-dependencies]
 psycopg2 = "^2.9.5"

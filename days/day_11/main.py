@@ -43,13 +43,13 @@ class Monkey(object):
 
 def func_maker(op, operand_str):
     match op, operand_str:
-        case ('*', 'old'):
+        case '*', 'old':
             return lambda x: x ** 2
-        case ('+', 'old'):
+        case '+', 'old':
             return lambda x: x * 2
-        case ('*', i):
+        case '*', i:
             return lambda x: x * int(i)
-        case ('+', i):
+        case '+', i:
             return lambda x: x + int(i)
         case _:
             return lambda x: x  # not needed, but makes static analyser happy
