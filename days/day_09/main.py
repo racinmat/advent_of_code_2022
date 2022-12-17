@@ -2,79 +2,7 @@ import math
 import time
 from os.path import dirname
 from pathlib import Path
-import numpy as np
-
-# from numba import int32, njit, typed
-# from numba.experimental import jitclass
-
-from misc import read_day, submit_day, prettytime
-
-
-# spec = [
-#     ('x', int32),
-#     ('y', int32),
-# ]
-#
-# @jitclass(spec)
-class Point:
-
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __add__(self, other):
-        if isinstance(other, Point):
-            return Point(self.x + other.x, self.y + other.y)
-        else:
-            return Point(self.x + other, self.y + other)
-
-    def __sub__(self, other):
-        if isinstance(other, Point):
-            return Point(self.x - other.x, self.y - other.y)
-        else:
-            return Point(self.x - other, self.y - other)
-
-    def dist(self, other):
-        return max(abs(self.x - other.x), abs(self.y - other.y))
-
-    def man_dist(self, other):
-        return abs(self.x - other.x) + abs(self.y - other.y)
-
-    def __iter__(self):
-        yield self.x
-        yield self.y
-
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-
-    def __repr__(self) -> str:
-        return f'Point({self.x},{self.y})'
-
-    def __floordiv__(self, other):
-        return Point(self.x // other, self.y // other)
-
-    def __truediv__(self, other):
-        return Point(self.x / other, self.y / other)
-
-    def __neg__(self):
-        return Point(-self.x, -self.y)
-
-    def ceildiv(self, other):
-        # https://stackoverflow.com/a/72864305/5224881
-        return -(-self // 2)
-
-    def __ceil__(self):
-        return Point(math.ceil(self.x), math.ceil(self.y))
-
-    def __floor__(self):
-        return Point(math.floor(self.x), math.floor(self.y))
-
-    def round_away_from_zero(self):
-        return Point(math.floor(self.x) if self.x < 0 else math.ceil(self.x),
-                     math.floor(self.y) if self.y < 0 else math.ceil(self.y))
+from misc import read_day, submit_day, prettytime, Point
 
 directions = {
     'R': Point(0, 1),
@@ -83,10 +11,10 @@ directions = {
     'D': Point(-1, 0),
 }
 
+
 def run_part1(moves: list):
     head_pos = Point(0, 0)
     tail_pos = Point(0, 0)
-    # positions = [tail_pos]
     positions = {tail_pos}
     for direction, length in moves:
         vec = directions[direction]
@@ -95,7 +23,6 @@ def run_part1(moves: list):
             head_pos += vec
             if head_pos.dist(tail_pos) > 1:
                 tail_pos = prev_head_pos
-                # positions.append(tail_pos)
                 positions.add(tail_pos)
     return positions
 
@@ -135,7 +62,7 @@ def execute_part2():
                 tail_pos = t
                 prev_tail = tail_pos
                 if a_head_pos.dist(tail_pos) > 1:
-                    if moved_diagonally:    # if head has moved diagonally, the rules are different
+                    if moved_diagonally:  # if head has moved diagonally, the rules are different
                         prev_head_pos = tail_pos + ((a_head_pos - tail_pos) / 2).round_away_from_zero()
                     tail_pos = prev_head_pos
                     tail_positions[j] = tail_pos
