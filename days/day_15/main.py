@@ -1,10 +1,11 @@
-import datetime
 import re
 import time
 from os.path import dirname
 from pathlib import Path
 from misc import read_day, submit_day, prettytime, Point
 import portion as P
+import shapely
+import numpy as np
 
 
 def parse_sensors(data):
@@ -60,20 +61,22 @@ def execute_part2():
     # y_max = 20
     y_max = 4_000_000
 
-    for y_line in range(y_min, y_max+1):
-        unknown_points = P.closed(y_min, y_max)
-        for sensor, beacon, sensor_range in sensors:
-            axis_dist = abs(sensor.y - y_line)
-            x_range = sensor_range - axis_dist
-            if x_range < 0:
-                continue
-            x_from = sensor.x - x_range
-            x_to = sensor.x + x_range
-            unknown_points -= P.closed(x_from, x_to)
-        if len(unknown_points) > 0:
-            return y_line + next(P.iterate(unknown_points, step=1)) * 4_000_000
-        if y_line % 1_000 == 0:
-            print(f'{datetime.datetime.now().isoformat()=}, {y_line=}')
+    whole_data = (y_min, y_min), (y_min, y_max), (y_max, y_max), (y_max, y_min)
+    polygons = []
+    whole_plane_s = shapely.Polygon(whole_data)
+    for sensor, beacon, sensor_range in sensors:
+        polyg_data = (
+            (sensor.x - sensor_range - 0.5, sensor.y),
+            (sensor.x, sensor.y - sensor_range - 0.5),
+            (sensor.x + sensor_range + 0.5, sensor.y),
+            (sensor.x, sensor.y + sensor_range + 0.5),
+        )
+        polygon_s = shapely.Polygon(polyg_data)
+        polygons.append(polyg_data)
+        whole_plane_s = whole_plane_s.difference(polygon_s)
+
+    x, y = np.rint(np.mean(whole_plane_s.boundary.xy, axis=1)).astype(np.int64)
+    return int(y + x * 4_000_000)
 
 
 if __name__ == '__main__':
