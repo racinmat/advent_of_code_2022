@@ -3,6 +3,7 @@ import time
 from os.path import dirname
 from pathlib import Path
 from misc import read_day, submit_day, prettytime, Point
+import portion as P
 
 
 def parse_sensors(data):
@@ -29,7 +30,8 @@ def execute_part1():
 
     in_sensor_range = []
     beacons_in_line = set()
-    no_sensor_points = set()
+    # no_sensor_points = set()
+    no_sensor_points = P.empty()
     for sensor, beacon, sensor_range in sensors:
         axis_dist = abs(sensor.y - y_line)
         x_range = sensor_range - axis_dist
@@ -40,11 +42,10 @@ def execute_part1():
         in_sensor_range.append([Point(x_from, y_line), Point(x_to, y_line)])
         if beacon.y == y_line:
             beacons_in_line.add(beacon.x)
-        for i in range(x_from, x_to+1):
-            if i == beacon.x or i in beacons_in_line:
-                continue
-            no_sensor_points.add(i)
-    return len(no_sensor_points)
+        no_sensor_points |= P.closed(x_from, x_to)
+    for b in beacons_in_line:
+        no_sensor_points -= P.closed(b, b)
+    return sum(map(lambda x: x.upper - x.lower, no_sensor_points))
 
 
 def execute_part2():

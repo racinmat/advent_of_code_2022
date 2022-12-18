@@ -664,6 +664,24 @@ docs = ["furo", "olefile", "sphinx (>=2.4)", "sphinx-copybutton", "sphinx-issues
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
 
 [[package]]
+name = "portion"
+version = "2.3.0"
+description = "Python data structure and operations for intervals"
+category = "main"
+optional = false
+python-versions = "~= 3.6"
+files = [
+    {file = "portion-2.3.0-py3-none-any.whl", hash = "sha256:b01e12a02b56ed20cf999fdbab368cc82b0ad73254c6a25ada210c1ff26ac498"},
+    {file = "portion-2.3.0.tar.gz", hash = "sha256:0e9d42838099263201b25517e4c1bd57042b5fe44432d6df38cef72d84d1eb1f"},
+]
+
+[package.dependencies]
+sortedcontainers = ">=2.2,<3.0"
+
+[package.extras]
+test = ["black (>=21.8b)", "coverage (>=6.0,<7.0)", "pytest (>=7.0,<8.0)"]
+
+[[package]]
 name = "psycopg2"
 version = "2.9.5"
 description = "psycopg2 - Python-PostgreSQL Database Adapter"
@@ -884,6 +902,18 @@ files = [
 ]
 
 [[package]]
+name = "sortedcontainers"
+version = "2.4.0"
+description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0"},
+    {file = "sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88"},
+]
+
+[[package]]
 name = "soupsieve"
 version = "2.3.2.post1"
 description = "A modern CSS selector implementation for Beautiful Soup."
@@ -1002,4 +1032,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "979897d1527e9d71068a84ea1a7ffff719829f9a4700824623919f6a81708274"
+content-hash = "768459d5e533c0e3f1d258d677c013b6bef37bcfa764ce6010a6b4b513da41e5"
