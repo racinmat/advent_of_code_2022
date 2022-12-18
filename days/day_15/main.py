@@ -1,3 +1,4 @@
+import datetime
 import re
 import time
 from os.path import dirname
@@ -49,18 +50,18 @@ def execute_part1():
 
 
 def execute_part2():
-    # input_file = "input.txt"
-    input_file = "test_input.txt"
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
     sensors = parse_sensors(data)
 
     y_min = 0
-    y_max = 20
-    # y_max = 4_000_000
+    # y_max = 20
+    y_max = 4_000_000
 
     for y_line in range(y_min, y_max+1):
-        unknown_points = set(range(y_min, y_max+1))
+        unknown_points = P.closed(y_min, y_max)
         for sensor, beacon, sensor_range in sensors:
             axis_dist = abs(sensor.y - y_line)
             x_range = sensor_range - axis_dist
@@ -68,11 +69,11 @@ def execute_part2():
                 continue
             x_from = sensor.x - x_range
             x_to = sensor.x + x_range
-            for i in range(max(x_from, 0), min(x_to, y_max)+1):
-                if i in unknown_points:
-                    unknown_points.remove(i)
+            unknown_points -= P.closed(x_from, x_to)
         if len(unknown_points) > 0:
-            return y_line + next(iter(unknown_points)) * 4_000_000
+            return y_line + next(P.iterate(unknown_points, step=1)) * 4_000_000
+        if y_line % 1_000 == 0:
+            print(f'{datetime.datetime.now().isoformat()=}, {y_line=}')
 
 
 if __name__ == '__main__':
