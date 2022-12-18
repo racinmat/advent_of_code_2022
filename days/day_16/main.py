@@ -6,6 +6,7 @@ import psycopg2
 from unified_planning import model
 from unified_planning.engines import PlanGenerationResultStatus
 from unified_planning.engines.factory import DEFAULT_ENGINES
+from unified_planning.io import PDDLWriter
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
 from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, RealType, IntType, Or, Plus, Equals, \
     OneshotPlanner
@@ -98,16 +99,20 @@ def execute_part1():
                 problem.set_initial_value(is_connected(valve_vars[valve['name']], valve_vars[other]), False)
 
     problem.set_initial_value(total_points, 0)
+    problem.set_initial_value(add_per_round, 0)
     problem.set_initial_value(remaining_time, 30)
     problem.add_goal(Equals(remaining_time, 0))
     problem.add_quality_metric(model.metrics.MaximizeExpressionOnFinalState(total_points))
 
-    with OneshotPlanner(problem_kind=problem.kind, optimality_guarantee=PlanGenerationResultStatus.SOLVED_OPTIMALLY) as planner:
-        # Asking the planner to solve the problem
-        plan = planner.solve(problem)
-
-        # Printing the plan
-        print(plan)
+    w = PDDLWriter(problem)
+    w.write_domain('valves_domain.pddl')
+    w.write_problem('valves_problem.pddl')
+    # with OneshotPlanner(problem_kind=problem.kind, optimality_guarantee=PlanGenerationResultStatus.SOLVED_OPTIMALLY) as planner:
+    #     # Asking the planner to solve the problem
+    #     plan = planner.solve(problem)
+    #
+    #     # Printing the plan
+    #     print(plan)
 
 
 def execute_part2():
@@ -118,8 +123,6 @@ def execute_part2():
 
 
 if __name__ == '__main__':
-    for name, (module_name, class_name) in DEFAULT_ENGINES.items():
-        print(f'{name=}, {module_name=}, {class_name=}')
     read_day(16)
     tic = time.perf_counter()
     res1 = execute_part1()
