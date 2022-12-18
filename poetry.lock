@@ -25,6 +25,17 @@ tzlocal = "*"
 nb = ["IPython", "jupyter-server"]
 
 [[package]]
+name = "antlr4-python3-runtime"
+version = "4.7.2"
+description = "ANTLR 4.7.2 runtime for Python 3.6.3"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "antlr4-python3-runtime-4.7.2.tar.gz", hash = "sha256:168cdcec8fb9152e84a87ca6fd261b3d54c8f6358f42ab3b813b14a7193bb50b"},
+]
+
+[[package]]
 name = "beautifulsoup4"
 version = "4.11.1"
 description = "Screen-scraping library"
@@ -411,6 +422,22 @@ pyparsing = ">=2.2.1"
 python-dateutil = ">=2.7"
 
 [[package]]
+name = "multipledispatch"
+version = "0.6.0"
+description = "Multiple dispatch"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "multipledispatch-0.6.0-py2-none-any.whl", hash = "sha256:407e6d8c5fa27075968ba07c4db3ef5f02bea4e871e959570eeb69ee39a6565b"},
+    {file = "multipledispatch-0.6.0-py3-none-any.whl", hash = "sha256:a55c512128fb3f7c2efd2533f2550accb93c35f1045242ef74645fc92a2c3cba"},
+    {file = "multipledispatch-0.6.0.tar.gz", hash = "sha256:a7ab1451fd0bf9b92cab3edbd7b205622fb767aeefb4fb536c2e3de9e0a38bea"},
+]
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "networkx"
 version = "2.8.8"
 description = "Python package for creating and manipulating graphs and networks"
@@ -577,6 +604,17 @@ pytz = ">=2020.1"
 test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
+name = "patch"
+version = "1.16"
+description = "Library to parse and apply unified diffs"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "patch-1.16.zip", hash = "sha256:c62073f356cff054c8ac24496f1a3d7cfa137835c31e9af39a9f5292fd75bd9f"},
+]
+
+[[package]]
 name = "pebble"
 version = "5.0.3"
 description = "Threading and multiprocessing eye-candy."
@@ -682,6 +720,33 @@ sortedcontainers = ">=2.2,<3.0"
 test = ["black (>=21.8b)", "coverage (>=6.0,<7.0)", "pytest (>=7.0,<8.0)"]
 
 [[package]]
+name = "psutil"
+version = "5.9.4"
+description = "Cross-platform lib for process and system monitoring in Python."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "psutil-5.9.4-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:c1ca331af862803a42677c120aff8a814a804e09832f166f226bfd22b56feee8"},
+    {file = "psutil-5.9.4-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:68908971daf802203f3d37e78d3f8831b6d1014864d7a85937941bb35f09aefe"},
+    {file = "psutil-5.9.4-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:3ff89f9b835100a825b14c2808a106b6fdcc4b15483141482a12c725e7f78549"},
+    {file = "psutil-5.9.4-cp27-cp27m-win32.whl", hash = "sha256:852dd5d9f8a47169fe62fd4a971aa07859476c2ba22c2254d4a1baa4e10b95ad"},
+    {file = "psutil-5.9.4-cp27-cp27m-win_amd64.whl", hash = "sha256:9120cd39dca5c5e1c54b59a41d205023d436799b1c8c4d3ff71af18535728e94"},
+    {file = "psutil-5.9.4-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:6b92c532979bafc2df23ddc785ed116fced1f492ad90a6830cf24f4d1ea27d24"},
+    {file = "psutil-5.9.4-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:efeae04f9516907be44904cc7ce08defb6b665128992a56957abc9b61dca94b7"},
+    {file = "psutil-5.9.4-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:54d5b184728298f2ca8567bf83c422b706200bcbbfafdc06718264f9393cfeb7"},
+    {file = "psutil-5.9.4-cp36-abi3-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:16653106f3b59386ffe10e0bad3bb6299e169d5327d3f187614b1cb8f24cf2e1"},
+    {file = "psutil-5.9.4-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54c0d3d8e0078b7666984e11b12b88af2db11d11249a8ac8920dd5ef68a66e08"},
+    {file = "psutil-5.9.4-cp36-abi3-win32.whl", hash = "sha256:149555f59a69b33f056ba1c4eb22bb7bf24332ce631c44a319cec09f876aaeff"},
+    {file = "psutil-5.9.4-cp36-abi3-win_amd64.whl", hash = "sha256:fd8522436a6ada7b4aad6638662966de0d61d241cb821239b2ae7013d41a43d4"},
+    {file = "psutil-5.9.4-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:6001c809253a29599bc0dfd5179d9f8a5779f9dffea1da0f13c53ee568115e1e"},
+    {file = "psutil-5.9.4.tar.gz", hash = "sha256:3d7f9739eb435d4b1338944abe23f49584bde5395f27487d2ee25ad9a8774a62"},
+]
+
+[package.extras]
+test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
+
+[[package]]
 name = "psycopg2"
 version = "2.9.5"
 description = "psycopg2 - Python-PostgreSQL Database Adapter"
@@ -718,6 +783,21 @@ files = [
 
 [package.extras]
 diagrams = ["jinja2", "railroad-diagrams"]
+
+[[package]]
+name = "pyperplan"
+version = "2.1"
+description = "A lightweight STRIPS planner written in Python."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pyperplan-2.1-py2.py3-none-any.whl", hash = "sha256:72e51921e8a17b9c583f96f47e78d78019b8177d7f05e31cddb86928dfd67b99"},
+    {file = "pyperplan-2.1.tar.gz", hash = "sha256:3754d7008d279392a8f0f8aea6da3cd0bdc03613297ddb06e33e0a983c2fbf9e"},
+]
+
+[package.dependencies]
+wheel = "*"
 
 [[package]]
 name = "python-dateutil"
@@ -981,6 +1061,34 @@ files = [
 ]
 
 [[package]]
+name = "tarski"
+version = "0.8.2"
+description = "Tarski is a framework for the specification, modeling and manipulation of AI planning problems."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "tarski-0.8.2-py3-none-any.whl", hash = "sha256:f965e946dfa845bf87703734e660734596a67e491c4f4a4fb101092ca9420bf5"},
+    {file = "tarski-0.8.2.tar.gz", hash = "sha256:a7df4f0c3c6a5b35cacf2420d5df78b0c64595fb7db6201353d6f7a28036e3fb"},
+]
+
+[package.dependencies]
+antlr4-python3-runtime = "4.7.2"
+multipledispatch = "*"
+numpy = {version = "*", optional = true, markers = "extra == \"arithmetic\""}
+psutil = {version = "*", markers = "platform_system == \"Linux\""}
+scipy = {version = "*", optional = true, markers = "extra == \"arithmetic\""}
+
+[package.extras]
+arithmetic = ["numpy", "scipy"]
+clingo = ["clingo (>=5.5.1)"]
+docs = ["docutils (<0.18)", "ipykernel (==6.9.1)", "ipython (==8.1.0)", "jinja2 (==3.0.3)", "nbsphinx (==0.8.8)", "recommonmark (==0.7.1)", "sphinx (==4.4.0)", "sphinx-rtd-theme (==1.0.0)"]
+parsegen = ["ply (==3.11)"]
+rddl = ["pyrddl"]
+stubs = ["types-psutil"]
+test = ["mypy", "pytest (>=7.0.1)", "pytest-cov", "tox"]
+
+[[package]]
 name = "termcolor"
 version = "2.1.1"
 description = "ANSI color formatting for output in terminal"
@@ -1056,6 +1164,10 @@ files = [
 [package.dependencies]
 networkx = "*"
 pyparsing = "*"
+tarski = {version = "*", extras = ["arithmetic"], optional = true, markers = "extra == \"tarski\""}
+up-enhsp = {version = "0.0.5", optional = true, markers = "extra == \"enhsp\""}
+up-fast-downward = {version = "0.0.2", optional = true, markers = "extra == \"fast-downward\""}
+up-pyperplan = {version = "0.2.0", optional = true, markers = "extra == \"pyperplan\""}
 
 [package.extras]
 dev = ["mypy", "pytest", "pytest-cov", "tarski[arithmetic]"]
@@ -1066,6 +1178,49 @@ grpc = ["grpc-stubs", "grpcio", "grpcio-tools"]
 pyperplan = ["up-pyperplan (==0.2.0)"]
 tamer = ["up-tamer (==0.2.0)"]
 tarski = ["tarski[arithmetic]"]
+
+[[package]]
+name = "up-enhsp"
+version = "0.0.5"
+description = "up_enhsp"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "up_enhsp-0.0.5-py3-none-any.whl", hash = "sha256:76af924ba0c1955a3309a4487c0244470c3a9d51d73240e98a3c6845a102ca3b"},
+    {file = "up_enhsp-0.0.5.tar.gz", hash = "sha256:0ca0072968d97956bedb92f696386dcda398876e6ba3971a76a9a781778ed0ed"},
+]
+
+[[package]]
+name = "up-fast-downward"
+version = "0.0.2"
+description = "Unified Planning Integration of the Fast Downward planning system"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "up_fast_downward-0.0.2-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:865f328e3e0488a41b8f7a7f6360000697f0dab83a65aa5646e9866127de660c"},
+    {file = "up_fast_downward-0.0.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5a1bd7161f8a5541c844c7b3b95933fd13da8d7c1bc8dcf4fcac1350a77b959"},
+    {file = "up_fast_downward-0.0.2-py3-none-win_amd64.whl", hash = "sha256:442334b1f06a41248a976e80f2656acc24938b18a72093f48e300432ed347782"},
+]
+
+[package.dependencies]
+patch = {version = "*", markers = "platform_system == \"Windows\""}
+
+[[package]]
+name = "up-pyperplan"
+version = "0.2.0"
+description = "up_pyperplan"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "up_pyperplan-0.2.0-py3-none-any.whl", hash = "sha256:1f00da2951278213c8020dbe35a2086294b8478406ef69fe4944e639dbf43e4c"},
+    {file = "up_pyperplan-0.2.0.tar.gz", hash = "sha256:578fd0ac31b140fe59dd877b7504a4e4ecbca69e44ed09058d375dd20a47866a"},
+]
+
+[package.dependencies]
+pyperplan = "2.1"
 
 [[package]]
 name = "urllib3"
@@ -1084,7 +1239,22 @@ brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)", "brotlipy (>=0.6.0)"]
 secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)", "urllib3-secure-extra"]
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
+[[package]]
+name = "wheel"
+version = "0.38.4"
+description = "A built-package format for Python"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "wheel-0.38.4-py3-none-any.whl", hash = "sha256:b60533f3f5d530e971d6737ca6d58681ee434818fab630c83a734bb10c083ce8"},
+    {file = "wheel-0.38.4.tar.gz", hash = "sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac"},
+]
+
+[package.extras]
+test = ["pytest (>=3.0.0)"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d73b88f7ce704709066679a4566becde76784188fd3e7d91d146018d8963935a"
+content-hash = "3c5b0c7aee34168c02a9c51b59e3c73d1d038979e5b05ba8b1fc6517a253ae84"

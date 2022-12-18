@@ -13,7 +13,7 @@ treelib = "^1.6.1"
 numpy = "^1.23.5"
 networkx = {extras = ["default"], version = "^2.8.8"}
 numba = "^0.56.4"
-unified-planning = "^0.4.2"
+unified-planning = {extras = ["enhsp", "fast-downward", "pyperplan", "tarski"], version = "^0.4.2"}
 portion = "^2.3.0"
 shapely = "^2.0.0"
 

@@ -3,57 +3,111 @@ import time
 from os.path import dirname
 from pathlib import Path
 import psycopg2
+from unified_planning import model
+from unified_planning.engines import PlanGenerationResultStatus
+from unified_planning.engines.factory import DEFAULT_ENGINES
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
-from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, RealType
+from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, RealType, IntType, Or, Plus, Equals, \
+    OneshotPlanner
 
 from misc import read_day, submit_day, prettytime
-
 
 def execute_part1():
     # input_file = "input.txt"
     input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         data = f.read().split('\n')
-    p = re.compile(r'Valve (?P<name>\w+) has flow rate=(?P<rate>\d+); tunnels? leads? to valves? (?P<neighbors>(\w+(, )?)*)')
+    p = re.compile(
+        r'Valve (?P<name>\w+) has flow rate=(?P<rate>\d+); tunnels? leads? to valves? (?P<neighbors>(\w+(, )?)*)')
     valves = []
     for line in data:
         m = p.match(line)
-        valve = {'name': m['name'], 'rate': m['rate'], 'neighbors': m['neighbors'].split(', ')}
+        valve = {'name': m['name'], 'rate': int(m['rate']), 'neighbors': m['neighbors'].split(', ')}
         valves.append(valve)
 
     # Declaring types
-    Location = UserType("Location")
+    location = UserType("Location")
 
     # Creating problem ‘variables’
-    robot_at = Fluent("robot_at", BoolType(), location=Location)
-    battery_charge = Fluent("battery_charge", RealType(0, 100))
+    position = Fluent("position", BoolType(), location=location)
+    remaining_time = Fluent("remaining_time", IntType(0, 30))
+    total_points = Fluent("total_points", IntType(0))
+    add_per_round = Fluent("add_per_round", IntType(0))
+    is_connected = Fluent(
+        "is_connected", BoolType(), location_1=location, location_2=location
+    )
+    valve_open = Fluent(
+        "valve_open", BoolType(), location=location
+    )
+    flow_rate = Fluent("flow_rate", IntType(0), location=location)
 
     # Creating actions
-    move = InstantaneousAction("move", l_from=Location, l_to=Location)
+    move = InstantaneousAction("move", l_from=location, l_to=location)
+    open_valve = InstantaneousAction("open_valve", at=location)
     l_from = move.parameter("l_from")
     l_to = move.parameter("l_to")
-    move.add_precondition(GE(battery_charge, 10))
-    move.add_precondition(robot_at(l_from))
-    move.add_precondition(Not(robot_at(l_to)))
-    move.add_effect(robot_at(l_from), False)
-    move.add_effect(robot_at(l_to), True)
-    move.add_effect(battery_charge, Minus(battery_charge, 10))
+    at = open_valve.parameter("at")
 
-    # Declaring objects
-    l1 = Object("l1", Location)
-    l2 = Object("l2", Location)
+    move.add_precondition(GE(remaining_time, 1))
+    move.add_precondition(position(l_from))
+    move.add_precondition(Not(position(l_to)))
+    move.add_precondition(Or(is_connected(l_from, l_to), is_connected(l_to, l_from)))
+    move.add_effect(position(l_from), False)
+    move.add_effect(position(l_to), True)
+    move.add_effect(remaining_time, Minus(remaining_time, 1))
+    move.add_effect(total_points, Plus(total_points, add_per_round))
+
+    open_valve.add_precondition(GE(remaining_time, 1))
+    open_valve.add_precondition(position(at))
+    open_valve.add_precondition(Not(valve_open(at)))
+    open_valve.add_effect(remaining_time, Minus(remaining_time, 1))
+    open_valve.add_effect(add_per_round, Plus(total_points, flow_rate(at)))
+    open_valve.add_effect(total_points, Plus(total_points, add_per_round))
 
     # Populating the problem with initial state and goals
-    problem = Problem("robot")
-    problem.add_fluent(robot_at)
-    problem.add_fluent(battery_charge)
+    problem = Problem("valves_problem")
+
+    problem.add_fluent(position)
+    problem.add_fluent(remaining_time)
+    problem.add_fluent(total_points)
+    problem.add_fluent(add_per_round)
+    problem.add_fluent(is_connected)
+
     problem.add_action(move)
-    problem.add_object(l1)
-    problem.add_object(l2)
-    problem.set_initial_value(robot_at(l1), True)
-    problem.set_initial_value(robot_at(l2), False)
-    problem.set_initial_value(battery_charge, 100)
-    problem.add_goal(robot_at(l2))
+    problem.add_action(open_valve)
+
+    # Declaring objects
+    valve_names = [v['name'] for v in valves]
+    valve_vars = {}
+    for valve in valves:
+        v = Object(valve['name'], location)
+        valve_vars[valve['name']] = v
+        problem.add_object(v)
+        if valve['name'] == 'AA':
+            problem.set_initial_value(position(v), True)
+        else:
+            problem.set_initial_value(position(v), False)
+        problem.set_initial_value(valve_open(v), False)
+        problem.set_initial_value(flow_rate(v), valve['rate'])
+
+    for valve in valves:
+        for other in valve_names:
+            if other in valve['neighbors']:
+                problem.set_initial_value(is_connected(valve_vars[valve['name']], valve_vars[other]), True)
+            else:
+                problem.set_initial_value(is_connected(valve_vars[valve['name']], valve_vars[other]), False)
+
+    problem.set_initial_value(total_points, 0)
+    problem.set_initial_value(remaining_time, 30)
+    problem.add_goal(Equals(remaining_time, 0))
+    problem.add_quality_metric(model.metrics.MaximizeExpressionOnFinalState(total_points))
+
+    with OneshotPlanner(problem_kind=problem.kind, optimality_guarantee=PlanGenerationResultStatus.SOLVED_OPTIMALLY) as planner:
+        # Asking the planner to solve the problem
+        plan = planner.solve(problem)
+
+        # Printing the plan
+        print(plan)
 
 
 def execute_part2():
@@ -64,6 +118,8 @@ def execute_part2():
 
 
 if __name__ == '__main__':
+    for name, (module_name, class_name) in DEFAULT_ENGINES.items():
+        print(f'{name=}, {module_name=}, {class_name=}')
     read_day(16)
     tic = time.perf_counter()
     res1 = execute_part1()
