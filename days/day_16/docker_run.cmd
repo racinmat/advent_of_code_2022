@@ -1,0 +1,1 @@
+docker run -v valves_domain.pddl:/root/valves_domain.pddl -v valves_problem.pddl:/root/valves_problem.pddl pddl_metric_ff ./ff -o /root/valves_domain.pddl -f /root/valves_problem.pddl
