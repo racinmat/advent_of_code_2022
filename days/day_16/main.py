@@ -2,16 +2,14 @@ import re
 import time
 from os.path import dirname
 from pathlib import Path
-import psycopg2
+
 from unified_planning import model
-from unified_planning.engines import PlanGenerationResultStatus
-from unified_planning.engines.factory import DEFAULT_ENGINES
 from unified_planning.io import PDDLWriter
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
-from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, RealType, IntType, Or, Plus, Equals, \
-    OneshotPlanner
+from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, IntType, Or, Plus, Equals
 
-from misc import read_day, submit_day, prettytime
+from misc import read_day, prettytime
+
 
 def execute_part1():
     # input_file = "input.txt"
@@ -55,15 +53,16 @@ def execute_part1():
     move.add_precondition(Or(is_connected(l_from, l_to), is_connected(l_to, l_from)))
     move.add_effect(position(l_from), False)
     move.add_effect(position(l_to), True)
-    move.add_effect(remaining_time, Minus(remaining_time, 1))
-    move.add_effect(total_points, Plus(total_points, add_per_round))
+    move.add_decrease_effect(remaining_time, 1)
+    move.add_increase_effect(total_points, add_per_round)
 
     open_valve.add_precondition(GE(remaining_time, 1))
     open_valve.add_precondition(position(at))
     open_valve.add_precondition(Not(valve_open(at)))
-    open_valve.add_effect(remaining_time, Minus(remaining_time, 1))
-    open_valve.add_effect(add_per_round, Plus(total_points, flow_rate(at)))
-    open_valve.add_effect(total_points, Plus(total_points, add_per_round))
+    open_valve.add_decrease_effect(remaining_time, 1)
+    open_valve.add_increase_effect(add_per_round, flow_rate(at))
+    open_valve.add_increase_effect(total_points, add_per_round)
+    open_valve.add_effect(valve_open(at), True)
 
     # Populating the problem with initial state and goals
     problem = Problem("valves_problem")
