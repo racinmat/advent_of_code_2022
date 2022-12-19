@@ -73,6 +73,8 @@ def execute_part1():
     problem.add_fluent(total_points)
     problem.add_fluent(add_per_round)
     problem.add_fluent(is_connected)
+    problem.add_fluent(valve_open)
+    problem.add_fluent(flow_rate)
 
     problem.add_action(move)
     problem.add_action(open_valve)
@@ -107,6 +109,15 @@ def execute_part1():
     w = PDDLWriter(problem)
     w.write_domain('valves_domain.pddl')
     w.write_problem('valves_problem.pddl')
+    with open('valves_domain.pddl', 'r', encoding='utf-8') as f:
+        domain_str = f.read()
+    with open('valves_problem.pddl', 'r', encoding='utf-8') as f:
+        problem_str = f.read()
+    with open('valves_domain.pddl', 'w', encoding='utf-8') as f:
+        f.write(domain_str.replace('\r\n', '\n').replace(' :numeric-fluents)', ' :fluents)'))
+    with open('valves_problem.pddl', 'w', encoding='utf-8') as f:
+        f.write(problem_str.replace('\r\n', '\n').replace('integer[0, inf] total_points', '(total_points)'))
+
     # with OneshotPlanner(problem_kind=problem.kind, optimality_guarantee=PlanGenerationResultStatus.SOLVED_OPTIMALLY) as planner:
     #     # Asking the planner to solve the problem
     #     plan = planner.solve(problem)

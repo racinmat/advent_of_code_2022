@@ -1,8 +1,8 @@
 (define (domain valves_problem-domain)
  (:requirements :strips :typing :negative-preconditions :disjunctive-preconditions :equality :fluents)
  (:types Location)
- (:predicates (position ?location - Location) (is_connected ?location_1 - Location ?location_2 - Location))
- (:functions (remaining_time) (total_points) (add_per_round))
+ (:predicates (position ?location - Location) (is_connected ?location_1 - Location ?location_2 - Location) (valve_open ?location - Location))
+ (:functions (remaining_time) (total_points) (add_per_round) (flow_rate ?location - Location))
  (:action move
   :parameters ( ?l_from - Location ?l_to - Location)
   :precondition (and (<= 1 (remaining_time)) (position ?l_from) (not (position ?l_to)) (or (is_connected ?l_from ?l_to) (is_connected ?l_to ?l_from)))
