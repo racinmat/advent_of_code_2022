@@ -32,39 +32,50 @@ def execute_part1():
     shapes = []
     for s_text in shapes_txt.split('\n\n'):
         lines = s_text.split('\n')
-        shape = np.zeros((len(lines), len(lines[0])), dtype=np.bool)
+        shape = np.zeros((len(lines), len(lines[0])), dtype=bool)
         for i, l in enumerate(lines):
             shape[i, [j == '#' for j in l]] = 1
         shapes.append(shape)
 
-    # grid = np.zeros((100_000, 7))
-    grid = np.zeros((20, 7), dtype=np.bool)
+    # grid = np.zeros((5_000, 7), dtype=np.int8)
+    grid = np.zeros((30, 7), dtype=np.int8)
     depth, tot_width = grid.shape
+    j = -1
     for i in range(2022):
         shape = shapes[i % len(shapes)]
-        x, y = shape.shape
-        width = 2
+        height, width = shape.shape
+        x = 2
         if np.all(grid == 0):
-            height = 3
+            y = depth - 3
         else:
-            height = np.argmax(np.argmax(grid, axis=1), axis=0) + 3
-        height = depth - height
-        j = -1
+            y = np.argmax(np.max(grid, axis=1), axis=0) - 3
+        print(f'starts falling: {x=}, {y=}')
+        even = False
         while True:
             copy_grid = np.copy(grid)
-            j += 1
-            p = pattern[j]
-            copy_grid[height - x:height, width:(width + y)] += shape
-            if p == '>':
-                width = min(width + 1, tot_width - x)
+            old_x, old_y = x, y
+            if even:
+                y += 1
+                print(f'falls down')
             else:
-                width = max(width - 1, 0)
-            height += 1
-            copy_grid[height - x:height, width:(width + y)] += shape
-            if np.any(copy_grid > 1):
+                j += 1
+                j %= len(pattern)
+                p = pattern[j]
+                if p == '>':
+                    # todo: add here the test for not being pushed towards stone
+                    x = min(x + 1, tot_width - width)
+                    print(f'pushes right{", nothing happens" if x == tot_width - width else ""}, {x=}, {y=}')
+                else:
+                    x = max(x - 1, 0)
+                    print(f'pushes left{", nothing happens" if x == 0 else ""}, {x=}, {y=}')
+            copy_grid[y - height:y, x:x + width] += shape
+            even = not even
+            # todo: if sth should be pushed towards other stone but can fall down, I should continue and now push it
+            if np.any(copy_grid > 1) or y > depth:
                 break
+        grid[old_y - height:old_y, old_x:old_x + width] += shape
 
-
+    print('')
 def execute_part2():
     # input_file = "input.txt"
     input_file = "test_input.txt"
