@@ -21,3 +21,7 @@ Run `python init.py` to generate base parts of the code base for each day.
 In order to download the input data programatically, log in to adventofcode.com, and then grab the cookie token and put it to `secret.yaml`.
 
 Run the db by `docker-compose up -d`
+
+solvers for day 16 downloaded from
+https://sites.google.com/view/enhsp/?pli=1
+https://fai.cs.uni-saarland.de/hoffmann/metric-ff.html

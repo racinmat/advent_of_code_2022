@@ -6,7 +6,7 @@ from pathlib import Path
 from unified_planning import model
 from unified_planning.io import PDDLWriter
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
-from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, IntType, Or, Plus, Equals
+from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, IntType, Or, Plus, Equals, GT, Times
 
 from misc import read_day, prettytime
 
@@ -31,7 +31,6 @@ def execute_part1():
     position = Fluent("position", BoolType(), location=location)
     remaining_time = Fluent("remaining_time", IntType(0, 30))
     total_points = Fluent("total_points", IntType(0))
-    add_per_round = Fluent("add_per_round", IntType(0))
     is_connected = Fluent(
         "is_connected", BoolType(), location_1=location, location_2=location
     )
@@ -47,21 +46,19 @@ def execute_part1():
     l_to = move.parameter("l_to")
     at = open_valve.parameter("at")
 
-    move.add_precondition(GE(remaining_time, 1))
+    move.add_precondition(GT(remaining_time, 0))
     move.add_precondition(position(l_from))
     move.add_precondition(Not(position(l_to)))
     move.add_precondition(Or(is_connected(l_from, l_to), is_connected(l_to, l_from)))
     move.add_effect(position(l_from), False)
     move.add_effect(position(l_to), True)
     move.add_decrease_effect(remaining_time, 1)
-    move.add_increase_effect(total_points, add_per_round)
 
-    open_valve.add_precondition(GE(remaining_time, 1))
+    open_valve.add_precondition(GT(remaining_time, 0))
     open_valve.add_precondition(position(at))
     open_valve.add_precondition(Not(valve_open(at)))
     open_valve.add_decrease_effect(remaining_time, 1)
-    open_valve.add_increase_effect(add_per_round, flow_rate(at))
-    open_valve.add_increase_effect(total_points, add_per_round)
+    open_valve.add_increase_effect(total_points, Times(flow_rate(at), remaining_time))
     open_valve.add_effect(valve_open(at), True)
 
     # Populating the problem with initial state and goals
@@ -70,7 +67,6 @@ def execute_part1():
     problem.add_fluent(position)
     problem.add_fluent(remaining_time)
     problem.add_fluent(total_points)
-    problem.add_fluent(add_per_round)
     problem.add_fluent(is_connected)
     problem.add_fluent(valve_open)
     problem.add_fluent(flow_rate)
@@ -100,7 +96,6 @@ def execute_part1():
                 problem.set_initial_value(is_connected(valve_vars[valve['name']], valve_vars[other]), False)
 
     problem.set_initial_value(total_points, 0)
-    problem.set_initial_value(add_per_round, 0)
     problem.set_initial_value(remaining_time, 30)
     problem.add_goal(Equals(remaining_time, 0))
     problem.add_quality_metric(model.metrics.MaximizeExpressionOnFinalState(total_points))

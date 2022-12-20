@@ -1,1 +1,2 @@
 docker run -v C:\Projects\advent_of_code_2022\days\day_16\valves_domain.pddl:/root/valves_domain.pddl -v C:\Projects\advent_of_code_2022\days\day_16\valves_problem.pddl:/root/valves_problem.pddl pddl_metric_ff ./ff -o /root/valves_domain.pddl -f /root/valves_problem.pddl
+docker run -v C:\Projects\advent_of_code_2022\days\day_16\valves_domain.pddl:/root/valves_domain.pddl -v C:\Projects\advent_of_code_2022\days\day_16\valves_problem.pddl:/root/valves_problem.pddl pddl_enhsp java -jar /opt/app/enhsp.jar -o /root/valves_domain.pddl -f /root/valves_problem.pddl -planner opt-hmax
