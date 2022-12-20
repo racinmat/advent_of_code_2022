@@ -3,13 +3,16 @@ from os.path import dirname
 from pathlib import Path
 from misc import read_day, submit_day, prettytime
 import numpy as np
+from statsmodels import api as sm
+import matplotlib.pyplot as plt
 
 
-def execute_part1():
-    input_file = "input.txt"
-    # input_file = "test_input.txt"
-    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
-        pattern = f.read()
+def check_period(arr, n):
+    a = np.split(arr, np.arange(n, len(arr), n))
+    return [j - i for i, j in zip(a[:-1], a[1:]) if len(i) == len(j)]
+
+
+def prepare_shapes():
     shapes_txt = """\
 ####
 
@@ -36,12 +39,14 @@ def execute_part1():
         for i, l in enumerate(lines):
             shape[i, [j == '#' for j in l]] = 1
         shapes.append(shape)
+    return shapes
 
-    grid = np.zeros((10_000, 7), dtype=np.int8)
-    # grid = np.zeros((30, 7), dtype=np.int8)
+
+def simulate_tetris(pattern, shapes, a_depth, n_steps):
+    grid = np.zeros((a_depth, 7), dtype=np.int8)
     depth, tot_width = grid.shape
     j = -1
-    for i in range(2022):
+    for i in range(n_steps):
         shape = shapes[i % len(shapes)]
         height, width = shape.shape
         x = 2
@@ -49,7 +54,7 @@ def execute_part1():
             y = depth - 3
         else:
             y = np.argmax(np.max(grid, axis=1), axis=0) - 3
-        print(f'{i}th starts falling: {x=},{y=}')
+        # print(f'{i}th starts falling: {x=},{y=}')
         even = False
         hit_floor = False
         while True:
@@ -57,7 +62,7 @@ def execute_part1():
             old_x, old_y = x, y
             if even:
                 y += 1
-                print(f'falls down to {x=},{y=}')
+                # print(f'falls down to {x=},{y=}')
                 if y > depth:
                     hit_floor = True
                     break
@@ -72,7 +77,7 @@ def execute_part1():
                         # not moving
                         x = old_x
                     copy_grid = np.copy(grid)
-                    print(f'pushes right{", nothing happens" if x == tot_width - width else ""}, {x=}, {y=}')
+                    # print(f'pushes right{", nothing happens" if x == tot_width - width else ""}, {x=}, {y=}')
                 else:
                     x = max(x - 1, 0)
                     copy_grid[y - height:y, x:x + width] += shape
@@ -80,7 +85,7 @@ def execute_part1():
                         # not moving
                         x = old_x
                     copy_grid = np.copy(grid)
-                    print(f'pushes left{", nothing happens" if x == 0 else ""}, {x=}, {y=}')
+                    # print(f'pushes left{", nothing happens" if x == 0 else ""}, {x=}, {y=}')
             even = not even
             # wtf, něco se děje, asi bych měl mít y == depth?
             if hit_floor:
@@ -90,7 +95,17 @@ def execute_part1():
                 if np.any(copy_grid > 1):
                     break
         grid[old_y - height:old_y, old_x:old_x + width] += shape
+    return depth, grid
 
+
+def execute_part1():
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
+        pattern = f.read()
+    shapes = prepare_shapes()
+    depth, grid = simulate_tetris(pattern, shapes, 10_000, 2022)
+    # depth, grid = simulate_tetris(pattern, shapes, 30, 2022)
     return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
 
 
@@ -98,17 +113,53 @@ def execute_part2():
     # input_file = "input.txt"
     input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
-        data = f.read().split('\n')
+        pattern = f.read()
+    shapes = prepare_shapes()
+    depth, grid = simulate_tetris(pattern, shapes, 25_000, 5_000)
+    # depth, grid = simulate_tetris(pattern, shapes, 30)
+    print('computed day 2')
+
+    # each input combination is assigned unique number.
+    time_ser = np.sum(grid * np.arange(1, 8), axis=1)[::-1]
+    valid_time_ser = time_ser[:np.max(np.where(time_ser > 0)[0])]
+    n_lags = min(5_000, len(valid_time_ser) - 1)
+    acf = sm.tsa.acf(valid_time_ser, nlags=n_lags)  # guess how much to compute
+    plt.figure(figsize=(10, 8))
+    lag = np.arange(n_lags + 1)
+    plt.plot(lag, acf)
+    plt.xlabel('Lags')
+    plt.ylabel('Autocorrelation')
+    plt.show()
+    # np.diff(np.where(valid_time_ser == 27))
+    # for test data, it's 53 period and offset 25
+    # for i in range(2, n_lags):
+    #     for j in range(i):
+    #         a1 = check_period(valid_time_ser[j:], i)
+    #         if np.all(list(map(lambda x: x == 0, a1[:20]))):
+    #             print(f'found it! {i=}, {j=}')
+    return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
 
 
 if __name__ == '__main__':
+    arr = [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3]
+    acf = sm.tsa.acf(arr, nlags=15)
+    a1 = check_period(arr, 1)
+    a2 = check_period(arr, 2)
+    a3 = check_period(arr, 3)
+    a4 = check_period(arr, 4)
+    a5 = check_period(arr, 5)
+    a6 = check_period(arr, 6)
+    a7 = check_period(arr, 7)
+    a8 = check_period(arr, 8)
+    acc = np.correlate(arr, arr, mode='full')
     read_day(17)
     tic = time.perf_counter()
     res1 = execute_part1()
+    print('done day 1')
     tac = time.perf_counter()
-    res2 = execute_part2()
+    # res2 = execute_part2()
     toc = time.perf_counter()
-    submit_day(res1, 17, 1)
+    # submit_day(res1, 17, 1)
     # submit_day(res2, 17, 2)
     print(f"day 17 part 1 in {prettytime(tac - tic)}, answer: {res1}")
-    print(f"day 17 part 2 in {prettytime(toc - tac)}, answer: {res2}")
+    # print(f"day 17 part 2 in {prettytime(toc - tac)}, answer: {res2}")

@@ -16,6 +16,7 @@ numba = "^0.56.4"
 unified-planning = {extras = ["enhsp", "fast-downward", "pyperplan", "tarski"], version = "^0.4.2"}
 portion = "^2.3.0"
 shapely = "^2.0.0"
+statsmodels = "^0.13.5"
 
 [tool.poetry.dev-dependencies]
 psycopg2 = "^2.9.5"
