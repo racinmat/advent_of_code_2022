@@ -1,0 +1,12 @@
+FROM ubuntu:20.04
+
+COPY ./optic-clp /root/optic-clp
+
+WORKDIR /root
+
+RUN apt-get update
+
+RUN apt-get install -y \
+    cmake coinor-libcbc-dev coinor-libclp-dev \
+    coinor-libcoinutils-dev coinor-libosi-dev \
+    coinor-libcgl-dev doxygen libbz2-dev bison flex

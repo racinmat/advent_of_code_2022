@@ -6,7 +6,7 @@ from pathlib import Path
 from unified_planning import model
 from unified_planning.io import PDDLWriter
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
-from unified_planning.shortcuts import UserType, BoolType, GE, Not, Minus, IntType, Or, Plus, Equals, GT, Times
+from unified_planning.shortcuts import UserType, BoolType, Not, IntType, Equals, GT, Times
 
 from misc import read_day, prettytime
 
@@ -34,8 +34,9 @@ def execute_part1():
     is_connected = Fluent(
         "is_connected", BoolType(), location_1=location, location_2=location
     )
-    valve_open = Fluent(
-        "valve_open", BoolType(), location=location
+    # formulating as valve closed so I don't have negative preconditions
+    valve_closed = Fluent(
+        "valve_closed", BoolType(), location=location
     )
     flow_rate = Fluent("flow_rate", IntType(0), location=location)
 
@@ -48,18 +49,20 @@ def execute_part1():
 
     move.add_precondition(GT(remaining_time, 0))
     move.add_precondition(position(l_from))
-    move.add_precondition(Not(position(l_to)))
-    move.add_precondition(Or(is_connected(l_from, l_to), is_connected(l_to, l_from)))
+    # negative preconditions are hard, should not be needed, if position is removed correctly
+    # move.add_precondition(Not(position(l_to)))
+    # I have predicates for both directions
+    move.add_precondition(is_connected(l_from, l_to))
     move.add_effect(position(l_from), False)
     move.add_effect(position(l_to), True)
     move.add_decrease_effect(remaining_time, 1)
 
     open_valve.add_precondition(GT(remaining_time, 0))
     open_valve.add_precondition(position(at))
-    open_valve.add_precondition(Not(valve_open(at)))
+    open_valve.add_precondition(valve_closed(at))
     open_valve.add_decrease_effect(remaining_time, 1)
     open_valve.add_increase_effect(total_points, Times(flow_rate(at), remaining_time))
-    open_valve.add_effect(valve_open(at), True)
+    open_valve.add_effect(valve_closed(at), False)
 
     # Populating the problem with initial state and goals
     problem = Problem("valves_problem")
@@ -68,7 +71,7 @@ def execute_part1():
     problem.add_fluent(remaining_time)
     problem.add_fluent(total_points)
     problem.add_fluent(is_connected)
-    problem.add_fluent(valve_open)
+    problem.add_fluent(valve_closed)
     problem.add_fluent(flow_rate)
 
     problem.add_action(move)
@@ -85,7 +88,7 @@ def execute_part1():
             problem.set_initial_value(position(v), True)
         else:
             problem.set_initial_value(position(v), False)
-        problem.set_initial_value(valve_open(v), False)
+        problem.set_initial_value(valve_closed(v), True)
         problem.set_initial_value(flow_rate(v), valve['rate'])
 
     for valve in valves:
@@ -108,9 +111,13 @@ def execute_part1():
     with open('valves_problem.pddl', 'r', encoding='utf-8') as f:
         problem_str = f.read()
     with open('valves_domain.pddl', 'w', encoding='utf-8') as f:
-        f.write(domain_str.replace('\r\n', '\n').replace(' :numeric-fluents)', ' :fluents)'))
+        f.write(domain_str.replace('\r\n', '\n')
+                .replace(' :numeric-fluents)', ' :fluents)')
+                )
     with open('valves_problem.pddl', 'w', encoding='utf-8') as f:
-        f.write(problem_str.replace('\r\n', '\n').replace('integer[0, inf] total_points', '(total_points)'))
+        f.write(problem_str.replace('\r\n', '\n')
+                .replace('integer[0, inf] total_points', '(total_points)')
+                )
 
     # with OneshotPlanner(problem_kind=problem.kind, optimality_guarantee=PlanGenerationResultStatus.SOLVED_OPTIMALLY) as planner:
     #     # Asking the planner to solve the problem
@@ -138,3 +145,5 @@ if __name__ == '__main__':
     # submit_day(res2, 16, 2)
     print(f"day 16 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 16 part 2 in {prettytime(toc - tac)}, answer: {res2}")
+# todo: search https://github.com/nergmada/planning-wiki/search?p=2&q=numeric which good numeric planners are there
+# try some of suggested here https://stackoverflow.com/a/71421101/5224881

@@ -25,3 +25,4 @@ Run the db by `docker-compose up -d`
 solvers for day 16 downloaded from
 https://sites.google.com/view/enhsp/?pli=1
 https://fai.cs.uni-saarland.de/hoffmann/metric-ff.html
+https://cw.fel.cvut.cz/old/_media/courses/a4m36pah/assignments/planners64.zip
