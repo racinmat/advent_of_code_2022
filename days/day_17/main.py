@@ -1,6 +1,9 @@
 import time
 from os.path import dirname
 from pathlib import Path
+
+from numba import njit, i8, types, b1, i1
+
 from misc import read_day, submit_day, prettytime
 import numpy as np
 from statsmodels import api as sm
@@ -42,6 +45,8 @@ def prepare_shapes():
     return shapes
 
 
+# @njit()
+@njit(i1[:, :](types.unicode_type, types.List(b1[:, :], reflected=True), i8, i8))
 def simulate_tetris(pattern, shapes, a_depth, n_steps):
     grid = np.zeros((a_depth, 7), dtype=np.int8)
     depth, tot_width = grid.shape
@@ -53,7 +58,8 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
         if np.all(grid == 0):
             y = depth - 3
         else:
-            y = np.argmax(np.max(grid, axis=1), axis=0) - 3
+            max_line = np.count_nonzero(grid, 1) > 0
+            y = np.argmax(max_line, 0) - 3
         # print(f'{i}th starts falling: {x=},{y=}')
         even = False
         hit_floor = False
@@ -95,7 +101,7 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
                 if np.any(copy_grid > 1):
                     break
         grid[old_y - height:old_y, old_x:old_x + width] += shape
-    return depth, grid
+    return grid
 
 
 def execute_part1():
@@ -104,7 +110,8 @@ def execute_part1():
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         pattern = f.read()
     shapes = prepare_shapes()
-    depth, grid = simulate_tetris(pattern, shapes, 10_000, 2022)
+    depth = 10_000
+    grid = simulate_tetris(pattern, shapes, depth, 2022)
     # depth, grid = simulate_tetris(pattern, shapes, 30, 2022)
     return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
 
@@ -115,7 +122,8 @@ def execute_part2():
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         pattern = f.read()
     shapes = prepare_shapes()
-    depth, grid = simulate_tetris(pattern, shapes, 25_000, 5_000)
+    depth = 10_000
+    grid = simulate_tetris(pattern, shapes, 25_000, 5_000)
     # depth, grid = simulate_tetris(pattern, shapes, 30)
     print('computed day 2')
 
