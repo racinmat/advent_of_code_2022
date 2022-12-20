@@ -1,9 +1,7 @@
 import time
 from os.path import dirname
 from pathlib import Path
-
-from numba import njit, i8, types, b1, i1
-
+from days.day_17 import my_module
 from misc import read_day, submit_day, prettytime
 import numpy as np
 from statsmodels import api as sm
@@ -45,14 +43,14 @@ def prepare_shapes():
     return shapes
 
 
-# @njit()
-@njit(i1[:, :](types.unicode_type, types.List(b1[:, :], reflected=True), i8, i8))
 def simulate_tetris(pattern, shapes, a_depth, n_steps):
     grid = np.zeros((a_depth, 7), dtype=np.int8)
+    blocks = np.zeros(a_depth, dtype=np.int32)
     depth, tot_width = grid.shape
     j = -1
-    for i in range(n_steps):
-        shape = shapes[i % len(shapes)]
+    old_height = depth
+    for i in range(1, n_steps + 1):
+        shape = shapes[(i-1) % len(shapes)]
         height, width = shape.shape
         x = 2
         if np.all(grid == 0):
@@ -64,7 +62,6 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
         even = False
         hit_floor = False
         while True:
-            copy_grid = np.copy(grid)
             old_x, old_y = x, y
             if even:
                 y += 1
@@ -78,41 +75,41 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
                 p = pattern[j]
                 if p == '>':
                     x = min(x + 1, tot_width - width)
-                    copy_grid[y - height:y, x:x + width] += shape
-                    if np.any(copy_grid > 1):
+                    added_shape = grid[y - height:y, x:x + width] + shape
+                    if np.any(added_shape > 1):
                         # not moving
                         x = old_x
-                    copy_grid = np.copy(grid)
                     # print(f'pushes right{", nothing happens" if x == tot_width - width else ""}, {x=}, {y=}')
                 else:
                     x = max(x - 1, 0)
-                    copy_grid[y - height:y, x:x + width] += shape
-                    if np.any(copy_grid > 1):
+                    added_shape = grid[y - height:y, x:x + width] + shape
+                    if np.any(added_shape > 1):
                         # not moving
                         x = old_x
-                    copy_grid = np.copy(grid)
                     # print(f'pushes left{", nothing happens" if x == 0 else ""}, {x=}, {y=}')
             even = not even
             # wtf, něco se děje, asi bych měl mít y == depth?
             if hit_floor:
                 break
             else:
-                copy_grid[y - height:y, x:x + width] += shape
-                if np.any(copy_grid > 1):
+                added_shape = grid[y - height:y, x:x + width] + shape
+                if np.any(added_shape > 1):
                     break
         grid[old_y - height:old_y, old_x:old_x + width] += shape
-    return grid
+        blocks[old_y - height:old_height] = i
+        old_height = old_y - height
+    return grid, blocks
 
 
 def execute_part1():
-    input_file = "input.txt"
-    # input_file = "test_input.txt"
+    # input_file = "input.txt"
+    input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         pattern = f.read()
     shapes = prepare_shapes()
-    depth = 10_000
-    grid = simulate_tetris(pattern, shapes, depth, 2022)
-    # depth, grid = simulate_tetris(pattern, shapes, 30, 2022)
+    depth = 6_000
+    # depth = 30
+    grid, _ = simulate_tetris(pattern, shapes, depth, 2022)
     return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
 
 
@@ -122,9 +119,10 @@ def execute_part2():
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         pattern = f.read()
     shapes = prepare_shapes()
-    depth = 10_000
-    grid = simulate_tetris(pattern, shapes, 25_000, 5_000)
-    # depth, grid = simulate_tetris(pattern, shapes, 30)
+    depth = 25_000
+    sim_steps = 5_000
+    target_steps = 1_000_000_000_000
+    grid, blocks = simulate_tetris(pattern, shapes, depth, sim_steps)
     print('computed day 2')
 
     # each input combination is assigned unique number.
@@ -138,13 +136,26 @@ def execute_part2():
     plt.xlabel('Lags')
     plt.ylabel('Autocorrelation')
     plt.show()
-    # np.diff(np.where(valid_time_ser == 27))
+    period = np.argsort(acf)[::-1][1]
     # for test data, it's 53 period and offset 25
-    # for i in range(2, n_lags):
-    #     for j in range(i):
-    #         a1 = check_period(valid_time_ser[j:], i)
-    #         if np.all(list(map(lambda x: x == 0, a1[:20]))):
-    #             print(f'found it! {i=}, {j=}')
+    offset = 0
+    for j in range(period):
+        a1 = check_period(valid_time_ser[j:], period)
+        if np.all(list(map(lambda x: x == 0, a1[:30]))):
+            offset = j
+            break
+    print(f'found it! {period=}, {offset=}')
+
+    offset_num = blocks[depth - offset]
+    after1period_num = blocks[depth - offset - period]
+    period_num = after1period_num - offset_num
+    cur_height = offset
+    cur_blocks = offset_num
+    while cur_blocks < target_steps:
+        cur_height += period
+        cur_blocks += period_num
+    a_len = int(depth - np.argmax(np.max(grid, axis=1), axis=0))
+    num_periods = (a_len - offset) / (sim_steps / 5)
     return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
 
 
@@ -165,9 +176,9 @@ if __name__ == '__main__':
     res1 = execute_part1()
     print('done day 1')
     tac = time.perf_counter()
-    # res2 = execute_part2()
+    res2 = execute_part2()
     toc = time.perf_counter()
     # submit_day(res1, 17, 1)
     # submit_day(res2, 17, 2)
     print(f"day 17 part 1 in {prettytime(tac - tic)}, answer: {res1}")
-    # print(f"day 17 part 2 in {prettytime(toc - tac)}, answer: {res2}")
+    print(f"day 17 part 2 in {prettytime(toc - tac)}, answer: {res2}")
