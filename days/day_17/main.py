@@ -43,14 +43,17 @@ def prepare_shapes():
     return shapes
 
 
-def simulate_tetris(pattern, shapes, a_depth, n_steps):
-    grid = np.zeros((a_depth, 7), dtype=np.int8)
-    blocks = np.zeros(a_depth, dtype=np.int32)
-    depth, tot_width = grid.shape
+def simulate_tetris(pattern, shapes, depth, n_steps):
+    grid = np.zeros((depth, 7), dtype=np.int8)
+    grid2 = np.zeros((depth, 7), dtype=np.int64)
+    blocks = - np.ones(depth, dtype=np.int32)
+    heights = np.zeros(n_steps, dtype=np.int8)
+    tot_width = grid.shape[1]
     j = -1
     old_height = depth
-    for i in range(1, n_steps + 1):
-        shape = shapes[(i-1) % len(shapes)]
+    max_height = depth
+    for i in range(n_steps):
+        shape = shapes[i % len(shapes)]
         height, width = shape.shape
         x = 2
         if np.all(grid == 0):
@@ -96,9 +99,12 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
                 if np.any(added_shape > 1):
                     break
         grid[old_y - height:old_y, old_x:old_x + width] += shape
+        grid2[old_y - height:old_y, old_x:old_x + width] += shape * i
         blocks[old_y - height:old_height] = i
+        heights[i] = max(max_height - (old_y - height), 0)
         old_height = old_y - height
-    return grid, blocks
+        max_height = min(max_height, old_y - height)
+    return grid, blocks, heights, grid2
 
 
 def execute_part1():
@@ -109,34 +115,44 @@ def execute_part1():
     shapes = prepare_shapes()
     depth = 6_000
     # depth = 30
-    grid, _ = simulate_tetris(pattern, shapes, depth, 2022)
+    grid, _, _, _ = simulate_tetris(pattern, shapes, depth, 2022)
     return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
 
 
 def execute_part2():
-    # input_file = "input.txt"
-    input_file = "test_input.txt"
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         pattern = f.read()
     shapes = prepare_shapes()
     depth = 25_000
     sim_steps = 5_000
     target_steps = 1_000_000_000_000
-    grid, blocks = simulate_tetris(pattern, shapes, depth, sim_steps)
+    # target_steps = 2022
+    grid, blocks, heights, grid2 = simulate_tetris(pattern, shapes, depth, sim_steps)
     print('computed day 2')
 
     # each input combination is assigned unique number.
     time_ser = np.sum(grid * np.arange(1, 8), axis=1)[::-1]
     valid_time_ser = time_ser[:np.max(np.where(time_ser > 0)[0])]
     n_lags = min(5_000, len(valid_time_ser) - 1)
+    hn_lags = min(5_000, len(heights) - 1)
     acf = sm.tsa.acf(valid_time_ser, nlags=n_lags)  # guess how much to compute
+    hacf = sm.tsa.acf(heights, nlags=hn_lags)  # guess how much to compute
     plt.figure(figsize=(10, 8))
     lag = np.arange(n_lags + 1)
     plt.plot(lag, acf)
     plt.xlabel('Lags')
     plt.ylabel('Autocorrelation')
     plt.show()
+    plt.figure(figsize=(10, 8))
+    lag = np.arange(hn_lags + 1)
+    plt.plot(lag, hacf)
+    plt.xlabel('Lags')
+    plt.ylabel('heights Autocorrelation')
+    plt.show()
     period = np.argsort(acf)[::-1][1]
+    hperiod = np.argsort(hacf)[::-1][1]
     # for test data, it's 53 period and offset 25
     offset = 0
     for j in range(period):
@@ -144,19 +160,29 @@ def execute_part2():
         if np.all(list(map(lambda x: x == 0, a1[:30]))):
             offset = j
             break
+    hoffset = 0
+    for j in range(hperiod):
+        a1 = check_period(heights[j:], hperiod)
+        if np.all(list(map(lambda x: x == 0, a1[:30]))):
+            hoffset = j
+            break
     print(f'found it! {period=}, {offset=}')
+    print(f'found it! {hperiod=}, {hoffset=}')
 
     offset_num = blocks[depth - offset]
     after1period_num = blocks[depth - offset - period]
     period_num = after1period_num - offset_num
-    cur_height = offset
-    cur_blocks = offset_num
-    while cur_blocks < target_steps:
-        cur_height += period
-        cur_blocks += period_num
-    a_len = int(depth - np.argmax(np.max(grid, axis=1), axis=0))
-    num_periods = (a_len - offset) / (sim_steps / 5)
-    return int(depth - np.argmax(np.max(grid, axis=1), axis=0))
+    cur_height = np.sum(heights[:hoffset])
+    period_height = np.sum(heights[:hoffset + hperiod]) - np.sum(heights[:hoffset])
+    cur_blocks = hoffset
+    num_periods = (target_steps - offset_num) // hperiod
+    cur_height += num_periods * period_height
+    cur_blocks += num_periods * hperiod
+    # add the part of period
+    remaining_blocks = target_steps - cur_blocks
+    cur_height += np.sum(heights[hoffset:hoffset+remaining_blocks])
+    cur_blocks += remaining_blocks
+    return int(cur_height)
 
 
 if __name__ == '__main__':
