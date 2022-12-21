@@ -50,8 +50,8 @@ def compute_mins(dists, groups):
 
 
 def execute_part1():
-    # input_file = "input.txt"
-    input_file = "test_input.txt"
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         coords_str = [i.split(',') for i in f.read().split('\n')]
     points = np.array([[int(i), int(j), int(k)] for i, j, k in coords_str])
@@ -69,13 +69,15 @@ def execute_part2():
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         coords_str = [i.split(',') for i in f.read().split('\n')]
     points = np.array([[int(i), int(j), int(k)] for i, j, k in coords_str])
-    assert (1,1,1) not in list(map(tuple, points))
+    assert (1, 1, 1) not in list(map(tuple, points))
     min_x, min_y, min_z = np.min(points, axis=0)
     max_x, max_y, max_z = np.max(points, axis=0)
     tot_points = (max_x - min_x) * (max_y - min_y) * (max_z - min_z)
     num_empty_points = tot_points - len(points)
     points_set = set(tuple(i) for i in points)
-    empty_points = np.array([i for i in product(range(min_x, max_x+1), range(min_y, max_y+1), range(min_z, max_z+1)) if tuple(i) not in points_set])
+    empty_points = np.array(
+        [i for i in product(range(min_x, max_x + 1), range(min_y, max_y + 1), range(min_z, max_z + 1)) if
+         tuple(i) not in points_set])
     dists = distance_matrix(points, points)
     groups = group_points(dists, points)
     empty_dists = distance_matrix(empty_points, empty_points)

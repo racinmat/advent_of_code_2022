@@ -463,6 +463,18 @@ extra = ["lxml (>=4.6)", "pydot (>=1.4.2)", "pygraphviz (>=1.9)", "sympy (>=1.10
 test = ["codecov (>=2.1)", "pytest (>=7.2)", "pytest-cov (>=4.0)"]
 
 [[package]]
+name = "nographs"
+version = "3.0.0"
+description = "Graph analysis – the lazy (evaluation) way: Analysis on the fly, for graphs, that are computed and/or adapted on the fly."
+category = "main"
+optional = false
+python-versions = ">=3.9, <4"
+files = [
+    {file = "nographs-3.0.0-py3-none-any.whl", hash = "sha256:42a18dc1c8d1b4faafcf3feb9e9118508f89b7ece4b1bc6fb4b3f1c2fe2eade5"},
+    {file = "nographs-3.0.0.tar.gz", hash = "sha256:6bcb5e619e8a97ed6fa1a1e45e325bed83812fb6fbf1cb2efaf266d34a5e6fb8"},
+]
+
+[[package]]
 name = "numba"
 version = "0.56.4"
 description = "compiling Python code using LLVM"
@@ -1326,4 +1338,4 @@ test = ["pytest (>=3.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "fc6a411cafadfddad7486cd40c0f187087409f1271aa736a71aa428cb559e1df"
+content-hash = "2de80db9b9a43805701129323a77db60c6757739de3381522fd960d2b4a478b5"
