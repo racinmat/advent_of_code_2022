@@ -17,7 +17,6 @@ unified-planning = {extras = ["enhsp", "fast-downward", "pyperplan", "tarski"], 
 portion = "^2.3.0"
 shapely = "^2.0.0"
 statsmodels = "^0.13.5"
-geometry3d = "^0.2.4"
 
 [tool.poetry.dev-dependencies]
 psycopg2 = "^2.9.5"
