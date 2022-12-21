@@ -4,11 +4,15 @@ from numba.pycc import CC
 cc = CC('my_module')
 
 
-@cc.export('simulate_tetris', 'i1[:, :](types.unicode_type, types.List(b1[:, ::1], reflected=True), i8, i8)')
-def simulate_tetris(pattern, shapes, a_depth, n_steps):
-    grid = np.zeros((a_depth, 7), dtype=np.int8)
-    depth, tot_width = grid.shape
+@cc.export('simulate_tetris', 'types.Tuple((i1[:, :], i4[:], i1[:]))(types.unicode_type, types.List(b1[:, ::1], reflected=True), i8, i8)')
+def simulate_tetris(pattern, shapes, depth, n_steps):
+    grid = np.zeros((depth, 7), dtype=np.int8)
+    blocks = - np.ones(depth, dtype=np.int32)
+    heights = np.zeros(n_steps, dtype=np.int8)
+    tot_width = grid.shape[1]
     j = -1
+    old_height = depth
+    max_height = depth
     for i in range(n_steps):
         shape = shapes[i % len(shapes)]
         height, width = shape.shape
@@ -48,7 +52,6 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
                         x = old_x
                     # print(f'pushes left{", nothing happens" if x == 0 else ""}, {x=}, {y=}')
             even = not even
-            # wtf, něco se děje, asi bych měl mít y == depth?
             if hit_floor:
                 break
             else:
@@ -56,7 +59,11 @@ def simulate_tetris(pattern, shapes, a_depth, n_steps):
                 if np.any(added_shape > 1):
                     break
         grid[old_y - height:old_y, old_x:old_x + width] += shape
-    return grid
+        blocks[old_y - height:old_height] = i
+        heights[i] = max(max_height - (old_y - height), 0)
+        old_height = old_y - height
+        max_height = min(max_height, old_y - height)
+    return grid, blocks, heights
 
 
 if __name__ == '__main__':
