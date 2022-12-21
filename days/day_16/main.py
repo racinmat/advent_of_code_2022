@@ -147,3 +147,9 @@ if __name__ == '__main__':
     print(f"day 16 part 2 in {prettytime(toc - tac)}, answer: {res2}")
 # todo: search https://github.com/nergmada/planning-wiki/search?p=2&q=numeric which good numeric planners are there
 # try some of suggested here https://stackoverflow.com/a/71421101/5224881
+
+# todo: instead of maximizing score, minimize it.
+# if we would have cost (max score+1) for all actions, both opening valves and moving, and valve opening would have
+# price the high cost - the points we obtain, and we still stop after 30 actions, it should work
+# usually this maximization -> minimization leads to preference of lower amount of edges/shorter path, but now we need
+# strictly 30 actions/edges.

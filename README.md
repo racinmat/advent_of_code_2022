@@ -26,3 +26,5 @@ solvers for day 16 downloaded from
 https://sites.google.com/view/enhsp/?pli=1
 https://fai.cs.uni-saarland.de/hoffmann/metric-ff.html
 https://cw.fel.cvut.cz/old/_media/courses/a4m36pah/assignments/planners64.zip
+
+the compiled.py must be ran before the main.py, if present, to compile the numba code.

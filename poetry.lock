@@ -232,6 +232,17 @@ files = [
 ]
 
 [[package]]
+name = "geometry3d"
+version = "0.2.4"
+description = "A 3D Geometry Lib"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "Geometry3D-0.2.4.tar.gz", hash = "sha256:883234c24367289729e2bce0560797747fa0a3a40e39c8b72d49e449ca90fba8"},
+]
+
+[[package]]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -789,6 +800,18 @@ files = [
 ]
 
 [[package]]
+name = "pymesh2"
+version = "0.1.14"
+description = "Mesh Processing for Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pymesh2-0.1.14-cp35-cp35m-macosx_10_11_x86_64.whl", hash = "sha256:437f8ec6446fd7fb89bbc9efe8de889b76ed4d0704b90e361b29e21fe6dcfe39"},
+    {file = "pymesh2-0.1.14.tar.gz", hash = "sha256:d1bd2876ce09ff8e59c80094f91cd283ce9b635086c26f35f08899c40ae626fc"},
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -1326,4 +1349,4 @@ test = ["pytest (>=3.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "fc6a411cafadfddad7486cd40c0f187087409f1271aa736a71aa428cb559e1df"
+content-hash = "24455f6aedff35054d79dc761846a70f93d90112fea478ddfd34befb4498478f"
