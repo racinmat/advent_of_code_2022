@@ -48,11 +48,11 @@ def all_empty(orientation, direction, grid, x, y):
         case 'R':
             return np.all(grid[x, y:y + direction + 1] == EMPTY)
         case 'L':
-            return np.all(grid[x, y:y - direction - 1:-1] == EMPTY)
+            return np.all(grid[x, y::-1] == EMPTY) if (y - direction - 1 < 0) else np.all(grid[x, y:y - direction - 1:-1] == EMPTY)
         case 'D':
             return np.all(grid[x:x + direction + 1, y] == EMPTY)
         case 'U':
-            return np.all(grid[x:x - direction - 1:-1, y] == EMPTY)
+            return np.all(grid[x::-1, y] == EMPTY) if (x - direction - 1 < 0) else np.all(grid[x:x - direction - 1:-1, y] == EMPTY)
 
 
 def after_wrap_plane(orientation, grid, x, y):
@@ -70,8 +70,8 @@ def after_wrap_plane(orientation, grid, x, y):
 def after_wrap_cube(orientations, orient, grid, x, y, wrappings, steps):
     orientation = orientations[orient]
     x_edge, y_edge = move_by(orientation, x, y, steps)
-    x_edge2, y_edge2, orient_new = wrappings[x_edge, y_edge, orient]
-    return Point(x_edge2, y_edge2), orient_new % 4
+    x_edge2, y_edge2, orient_change = wrappings[x_edge, y_edge, orient]
+    return Point(x_edge2, y_edge2), (orient + orient_change) % 4
 
 
 def goes_outside_grid(orientation, direction, grid, x, y):
@@ -269,15 +269,15 @@ def compute_wrappings(grid):
             mappings[x1, y1, 2] = (x2, y2, +1)
             mappings[x2, y2, 1] = (x1, y1, -1)
         # 6
-        y1 = side * 2 - 1
-        y2 = side * 3 - 1
-        for x1, x2 in zip(range(0, side), range(side * 3 - 1, side * 2 - 1, -1)):
+        x1 = side * 2 - 1
+        x2 = side * 3 - 1
+        for y1, y2 in zip(range(0, side), range(side * 3 - 1, side * 2 - 1, -1)):
             mappings[x1, y1, 1] = (x2, y2, +2)
             mappings[x2, y2, 1] = (x1, y1, -2)
         # 7
-        y1 = side * 2 - 1
-        x2 = side * 2
-        for x1, y2 in zip(range(side, side * 2), range(side * 3 - 1, side * 2 - 1, -1)):
+        x1 = side * 2 - 1
+        y2 = side * 2
+        for y1, x2 in zip(range(side, side * 2), range(side * 3 - 1, side * 2 - 1, -1)):
             mappings[x1, y1, 1] = (x2, y2, +3)
             mappings[x2, y2, 2] = (x1, y1, -3)
     else:
@@ -302,8 +302,8 @@ def execute_part1():
 
 
 def execute_part2():
-    # input_file = "input.txt"
-    input_file = "test_input.txt"
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         maze, directions_str = f.read().split('\n\n')
     grid = parse_grid(maze)
