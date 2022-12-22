@@ -2,40 +2,13 @@ import copy
 import time
 from os.path import dirname
 from pathlib import Path
-import numpy as np
+import my_module
+
 from misc import read_day, submit_day, prettytime
 
 
-def find(cur_indices, i):
-    return next(filter(lambda xy: xy[1] == i, enumerate(cur_indices)))[0]
-
-
-def execute_part1():
-    input_file = "input.txt"
-    # input_file = "test_input.txt"
-    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
-        numbers = [int(i) for i in f.read().split('\n')]
-    orig_numbers = copy.copy(numbers)
-    tot_len = len(orig_numbers)
-    orig_indices = list(range(len(orig_numbers)))
-    cur_indices = copy.copy(orig_indices)
-    print(f'{", ".join(map(str, numbers))}')
-    for i in orig_indices:
-        assert len(set(cur_indices)) == len(cur_indices) == tot_len
-        val = orig_numbers[i]
-        # I need inverse search, not direct
-        cur_idx = find(cur_indices, i)
-        new_idx = (cur_idx + val)
-        if new_idx >= tot_len:
-            new_idx = (new_idx % tot_len) + (new_idx // tot_len)
-        elif new_idx < -tot_len:
-            new_idx = -(-new_idx % tot_len) - (-new_idx // tot_len)
-        del numbers[cur_idx]
-        numbers.insert(new_idx, val)
-        del cur_indices[cur_idx]
-        cur_indices.insert(new_idx, i)
-        # print(f'{", ".join(map(str, numbers))}')
-    zero_idx = find(numbers, 0)
+def get_result(numbers, tot_len):
+    zero_idx = my_module.find(numbers, 0)
     one_i = (zero_idx + 1_000) % tot_len
     two_i = (zero_idx + 2_000) % tot_len
     three_i = (zero_idx + 3_000) % tot_len
@@ -45,11 +18,30 @@ def execute_part1():
     return one + two + three
 
 
-def execute_part2():
-    # input_file = "input.txt"
-    input_file = "test_input.txt"
+def execute_part1():
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         numbers = [int(i) for i in f.read().split('\n')]
+    orig_numbers = copy.copy(numbers)
+    orig_indices = list(range(len(orig_numbers)))
+    cur_indices = copy.copy(orig_indices)
+    tot_len, numbers, _ = my_module.mix_numbers(numbers, orig_numbers, orig_indices, cur_indices)
+    return get_result(numbers, tot_len)
+
+
+def execute_part2():
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
+        numbers = [int(i) * 811589153 for i in f.read().split('\n')]
+    orig_numbers = copy.copy(numbers)
+    orig_indices = list(range(len(orig_numbers)))
+    cur_indices = copy.copy(orig_indices)
+    tot_len = None
+    for i in range(10):
+        tot_len, numbers, cur_indices = my_module.mix_numbers(numbers, orig_numbers, orig_indices, cur_indices)
+    return get_result(numbers, tot_len)
 
 
 if __name__ == '__main__':
