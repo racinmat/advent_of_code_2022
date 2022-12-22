@@ -34,23 +34,23 @@ def find_type(orientation, direction, grid, x, y, val):
         case 'R':
             return find_first(grid[x, y:y + direction+1], val)
         case 'L':
-            return find_first(grid[x, y:max(y - direction-1, 0):-1], val)
+            return find_first(grid[x, y::-1], val) if (y - direction - 1 < 0) else find_first(grid[x, y:y - direction-1:-1], val)
         case 'D':
             return find_first(grid[x:x + direction+1, y], val)
         case 'U':
-            return find_first(grid[x:max(x - direction-1, 0):-1, y], val)
+            return find_first(grid[x::-1, y], val) if (x - direction - 1 < 0) else find_first(grid[x:x - direction-1:-1, y], val)
 
 
 def all_empty(orientation, direction, grid, x, y):
     match orientation:
         case 'R':
-            return np.all(grid[x, y:y + direction] == EMPTY)
+            return np.all(grid[x, y:y + direction+1] == EMPTY)
         case 'L':
-            return np.all(grid[x, y:y - direction:-1] == EMPTY)
+            return np.all(grid[x, y:y - direction-1:-1] == EMPTY)
         case 'D':
-            return np.all(grid[x:x + direction, y] == EMPTY)
+            return np.all(grid[x:x + direction+1, y] == EMPTY)
         case 'U':
-            return np.all(grid[x:x - direction:-1, y] == EMPTY)
+            return np.all(grid[x:x - direction-1:-1, y] == EMPTY)
 
 
 def after_wrap(orientation, grid, x, y):
@@ -66,7 +66,6 @@ def after_wrap(orientation, grid, x, y):
 
 
 def goes_outside_grid(orientation, direction, grid, x, y):
-    # if all empty, I just go there, if not, I wrap, so going outside of the grid must start wrapping logic
     match orientation:
         case 'R':
             return y + direction >= grid.shape[1]
@@ -79,16 +78,15 @@ def goes_outside_grid(orientation, direction, grid, x, y):
 
 
 def dist2grid_end(orientation, grid, x, y):
-    # if all empty, I just go there, if not, I wrap, so going outside of the grid must start wrapping logic
     match orientation:
         case 'R':
             return grid.shape[1] - y
         case 'L':
-            return y
+            return y + 1
         case 'D':
             return grid.shape[0] - x
         case 'U':
-            return x
+            return x + 1
 
 
 def is_wall_after_wrap(orientation, grid, x, y):
@@ -132,7 +130,7 @@ def move(grid, pos, orientation, direction):
         else:
             void = void_coord
         remaining = direction - void
-        if remaining == 0 or is_wall_after_wrap(orientation, grid, x, y):
+        if is_wall_after_wrap(orientation, grid, x, y):
             return move_by(orientation, x, y, void - 1)
         else:
             pos = after_wrap(orientation, grid, x, y)
@@ -171,6 +169,7 @@ def execute_part1():
                 orient = (orient - 1) % 4
             case 'R':
                 orient = (orient + 1) % 4
+        # print(f'end of direction={direction}, position={pos.x},{pos.y}')
     x, y = pos
     return (x + 1) * 1_000 + (y + 1) * 4 + orient
 
@@ -189,9 +188,7 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    # submit_day(res1, 22, 1)
+    submit_day(res1, 22, 1)
     # submit_day(res2, 22, 2)
     print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
-# wrong answer: 116284
-# That's not the right answer; your answer is too low.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Please wait one minute before trying again. (You guessed 116284.) [Return to Day 22]
