@@ -6,6 +6,10 @@ import numpy as np
 from misc import read_day, submit_day, prettytime
 
 
+def find(cur_indices, i):
+    return next(filter(lambda xy: xy[1] == i, enumerate(cur_indices)))[0]
+
+
 def execute_part1():
     input_file = "input.txt"
     # input_file = "test_input.txt"
@@ -22,15 +26,24 @@ def execute_part1():
         # I need inverse search, not direct
         cur_idx = find(cur_indices, i)
         new_idx = (cur_idx + val)
-        while new_idx >= tot_len:
-            new_idx = (new_idx % tot_len) + 1
-        if new_idx < -tot_len:
+        if new_idx >= tot_len:
+            new_idx = (new_idx % tot_len) + (new_idx // tot_len)
+        elif new_idx < -tot_len:
             new_idx = -(-new_idx % tot_len) - (-new_idx // tot_len)
         del numbers[cur_idx]
         numbers.insert(new_idx, val)
         del cur_indices[cur_idx]
-        cur_indices.insert(cur_idx + val, i)
-        print(f'{", ".join(map(str, numbers))}')
+        cur_indices.insert(new_idx, i)
+        # print(f'{", ".join(map(str, numbers))}')
+    zero_idx = find(numbers, 0)
+    one_i = (zero_idx + 1_000) % tot_len
+    two_i = (zero_idx + 2_000) % tot_len
+    three_i = (zero_idx + 3_000) % tot_len
+    one = numbers[one_i]
+    two = numbers[two_i]
+    three = numbers[three_i]
+    return one + two + three
+
 
 def execute_part2():
     # input_file = "input.txt"
@@ -50,8 +63,3 @@ if __name__ == '__main__':
     # submit_day(res2, 20, 2)
     print(f"day 20 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 20 part 2 in {prettytime(toc - tac)}, answer: {res2}")
-
-# wrong answer: 3953
-# That's not the right answer; your answer is too low.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Please wait one minute before trying again. (You guessed 3953.) [Return to Day 20]
-# wrong answer: -20505
-# That's not the right answer.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Please wait one minute before trying again. (You guessed -20505.) [Return to Day 20]
