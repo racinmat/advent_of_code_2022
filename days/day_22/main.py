@@ -48,11 +48,13 @@ def all_empty(orientation, direction, grid, x, y):
         case 'R':
             return np.all(grid[x, y:y + direction + 1] == EMPTY)
         case 'L':
-            return np.all(grid[x, y::-1] == EMPTY) if (y - direction - 1 < 0) else np.all(grid[x, y:y - direction - 1:-1] == EMPTY)
+            return np.all(grid[x, y::-1] == EMPTY) if (y - direction - 1 < 0) else np.all(
+                grid[x, y:y - direction - 1:-1] == EMPTY)
         case 'D':
             return np.all(grid[x:x + direction + 1, y] == EMPTY)
         case 'U':
-            return np.all(grid[x::-1, y] == EMPTY) if (x - direction - 1 < 0) else np.all(grid[x:x - direction - 1:-1, y] == EMPTY)
+            return np.all(grid[x::-1, y] == EMPTY) if (x - direction - 1 < 0) else np.all(
+                grid[x:x - direction - 1:-1, y] == EMPTY)
 
 
 def after_wrap_plane(orientation, grid, x, y):
@@ -195,47 +197,47 @@ def compute_wrappings(grid):
     if grid[grid.shape[0] - 1, 0] != VOID and grid[0, grid.shape[1] - 1] != VOID:
         # my shape
         # 1
-        x1 = side * 2 + 1
-        y2 = side + 1
-        for y1, x2 in zip(range(0, side), range(side * 2, side * 3)):
-            mappings[x1, y1, 3] = (x2, y2, +1)
-            mappings[x2, y2, 2] = (x1, y1, -1)
+        y1 = side * 2 - 1
+        x2 = side - 1
+        for x1, y2 in zip(range(side, side * 2), range(side * 2, side * 3)):
+            mappings[x1, y1, 0] = (x2, y2, +3)
+            mappings[x2, y2, 1] = (x1, y1, -3)
         # 2
-        y1 = 1
-        y2 = side + 1
-        for x1, x2 in zip(range(side * 3, side * 4), range(side * 2 - 1, side - 1, -1)):
-            mappings[x1, y1, 2] = (x2, y2, +2)
-            mappings[x2, y2, 2] = (x1, y1, -2)
+        y1 = side * 2 - 1
+        y2 = side * 3 - 1
+        for x1, x2 in zip(range(side * 3, side * 4), range(side - 1, -1, -1)):
+            mappings[x1, y1, 0] = (x2, y2, +2)
+            mappings[x2, y2, 0] = (x1, y1, -2)
         # 3
-        x1 = side * 4
-        x2 = 1
+        x1 = side * 4 - 1
+        x2 = 0
         for y1, y2 in zip(range(0, side), range(side * 2, side * 3)):
             mappings[x1, y1, 1] = (x2, y2, +0)
             mappings[x2, y2, 3] = (x1, y1, -0)
         # 4
-        x1 = side * 4
-        y2 = side * 3
-        for y1, x2 in zip(range(side, side * 2), range(0, side)):
-            mappings[x1, y1, 1] = (x2, y2, +1)
-            mappings[x2, y2, 0] = (x1, y1, -1)
+        y1 = 0
+        x2 = 0
+        for x1, y2 in zip(range(side * 3, side * 4), range(side * 2 - 1, side - 1, -1)):
+            mappings[x1, y1, 2] = (x2, y2, +3)
+            mappings[x2, y2, 3] = (x1, y1, -3)
         # 5
-        y1 = side * 2
-        y2 = side * 3
-        for x1, x2 in zip(range(side * 3, side * 4), range(side * 2 - 1, side - 1, -1)):
-            mappings[x1, y1, 0] = (x2, y2, +2)
-            mappings[x2, y2, 0] = (x1, y1, -2)
+        y1 = 0
+        y2 = side
+        for x1, x2 in zip(range(side * 2, side * 3), range(side - 1, - 1, -1)):
+            mappings[x1, y1, 2] = (x2, y2, +2)
+            mappings[x2, y2, 2] = (x1, y1, -2)
         # 6
-        y1 = side * 2
-        x2 = side * 2
-        for x1, y2 in zip(range(side * 2, side * 3), range(side * 2, side * 3)):
-            mappings[x1, y1, 0] = (x2, y2, +3)
-            mappings[x2, y2, 1] = (x1, y1, -3)
-        # 7
-        x1 = side + 1
-        y2 = side * 2 + 1
-        for y1, x2 in zip(range(side, side * 2), range(0, side)):
+        x1 = side * 2
+        y2 = side
+        for y1, x2 in zip(range(0, side), range(side, side * 2)):
             mappings[x1, y1, 3] = (x2, y2, +1)
             mappings[x2, y2, 2] = (x1, y1, -1)
+        # 7
+        y1 = side - 1
+        x2 = side * 3 - 1
+        for x1, y2 in zip(range(side * 3, side * 4), range(side, side * 2)):
+            mappings[x1, y1, 0] = (x2, y2, +3)
+            mappings[x2, y2, 1] = (x1, y1, -3)
     elif grid[grid.shape[0] - 1, grid.shape[1] - 1] != VOID and grid[0, grid.shape[1] - 1] == VOID:
         # test shape
         # 1
