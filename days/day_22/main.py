@@ -32,25 +32,27 @@ def find_first(row, comp):
 def find_type(orientation, direction, grid, x, y, val):
     match orientation:
         case 'R':
-            return find_first(grid[x, y:y + direction+1], val)
+            return find_first(grid[x, y:y + direction + 1], val)
         case 'L':
-            return find_first(grid[x, y::-1], val) if (y - direction - 1 < 0) else find_first(grid[x, y:y - direction-1:-1], val)
+            return find_first(grid[x, y::-1], val) if (y - direction - 1 < 0) else find_first(
+                grid[x, y:y - direction - 1:-1], val)
         case 'D':
-            return find_first(grid[x:x + direction+1, y], val)
+            return find_first(grid[x:x + direction + 1, y], val)
         case 'U':
-            return find_first(grid[x::-1, y], val) if (x - direction - 1 < 0) else find_first(grid[x:x - direction-1:-1, y], val)
+            return find_first(grid[x::-1, y], val) if (x - direction - 1 < 0) else find_first(
+                grid[x:x - direction - 1:-1, y], val)
 
 
 def all_empty(orientation, direction, grid, x, y):
     match orientation:
         case 'R':
-            return np.all(grid[x, y:y + direction+1] == EMPTY)
+            return np.all(grid[x, y:y + direction + 1] == EMPTY)
         case 'L':
-            return np.all(grid[x, y:y - direction-1:-1] == EMPTY)
+            return np.all(grid[x, y:y - direction - 1:-1] == EMPTY)
         case 'D':
-            return np.all(grid[x:x + direction+1, y] == EMPTY)
+            return np.all(grid[x:x + direction + 1, y] == EMPTY)
         case 'U':
-            return np.all(grid[x:x - direction-1:-1, y] == EMPTY)
+            return np.all(grid[x:x - direction - 1:-1, y] == EMPTY)
 
 
 def after_wrap(orientation, grid, x, y):
@@ -113,7 +115,8 @@ def move_by(orientation, x, y, steps):
             return Point(x - steps, y)
 
 
-def move(grid, pos, orientation, direction):
+def move(grid, pos, orientations, orient, direction, is_cube):
+    orientation = orientations[orient]
     if direction == 0:
         return pos
     x, y = pos
@@ -124,7 +127,7 @@ def move(grid, pos, orientation, direction):
         return move_by(orientation, x, y, direction)
     else:
         void_coord = find_type(orientation, direction, grid, x, y, VOID)
-        # check that we really go outside and there is not explicit void before us
+        # check that we really go outside and there is no explicit void before us
         if goes_outside_grid(orientation, direction, grid, x, y) and void_coord == 0:
             void = dist2grid_end(orientation, grid, x, y)
         else:
@@ -134,7 +137,7 @@ def move(grid, pos, orientation, direction):
             return move_by(orientation, x, y, void - 1)
         else:
             pos = after_wrap(orientation, grid, x, y)
-            return move(grid, pos, orientation, remaining)
+            return move(grid, pos, orientations, orient, remaining, is_cube)
 
 
 def parse_directions(directions_str):
@@ -144,11 +147,7 @@ def parse_directions(directions_str):
     return directions
 
 
-def execute_part1():
-    input_file = "input.txt"
-    # input_file = "test_input.txt"
-    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
-        maze, directions_str = f.read().split('\n\n')
+def parse_grid(maze):
     rows = maze.split('\n')
     grid = np.zeros((len(rows), max(map(len, rows))), dtype=np.int8)
     for row, grid_line in zip(rows, grid):
@@ -157,28 +156,50 @@ def execute_part1():
         grid_line[:len(row)] += (np_row == ' ') * VOID
         grid_line[:len(row)] += (np_row == '#') * WALL
         grid_line[:len(row)] += (np_row == '.') * EMPTY
-    directions = parse_directions(directions_str)
+    return grid
+
+
+def run_maze(directions, grid, is_cube):
     pos = Point(0, int(np.argmax(grid[0, :] == EMPTY)))
     orientations = ['R', 'D', 'L', 'U']
     orient = 0
     for i, direction in enumerate(directions):
         match direction:
             case int():
-                pos = move(grid, pos, orientations[orient], direction)
+                orient, pos = move(grid, pos, orientations, orient, direction, is_cube)
             case 'L':
                 orient = (orient - 1) % 4
             case 'R':
                 orient = (orient + 1) % 4
         # print(f'end of direction={direction}, position={pos.x},{pos.y}')
+    return orient, pos
+
+
+def compute_password(orient, pos):
     x, y = pos
     return (x + 1) * 1_000 + (y + 1) * 4 + orient
+
+
+def execute_part1():
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
+    with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
+        maze, directions_str = f.read().split('\n\n')
+    grid = parse_grid(maze)
+    directions = parse_directions(directions_str)
+    orient, pos = run_maze(directions, grid, False)
+    return compute_password(orient, pos)
 
 
 def execute_part2():
     # input_file = "input.txt"
     input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
-        monkeys_input = f.read().split('\n\n')
+        maze, directions_str = f.read().split('\n\n')
+    grid = parse_grid(maze)
+    directions = parse_directions(directions_str)
+    orient, pos = run_maze(directions, grid, True)
+    return compute_password(orient, pos)
 
 
 if __name__ == '__main__':
