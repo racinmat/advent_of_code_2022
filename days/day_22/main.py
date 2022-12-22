@@ -34,11 +34,11 @@ def find_type(orientation, direction, grid, x, y, val):
         case 'R':
             return find_first(grid[x, y:y + direction], val)
         case 'L':
-            raise NotImplementedError()
+            return find_first(grid[x, y:max(y - direction, 0):-1], val)
         case 'D':
             return find_first(grid[x:x + direction, y], val)
         case 'U':
-            raise NotImplementedError()
+            return find_first(grid[x:max(x - direction, 0):-1, y], val)
 
 
 def all_empty(orientation, direction, grid, x, y):
@@ -46,23 +46,73 @@ def all_empty(orientation, direction, grid, x, y):
         case 'R':
             return np.all(grid[x, y:y + direction] == EMPTY)
         case 'L':
-            raise NotImplementedError()
+            return np.all(grid[x, y:y - direction:-1] == EMPTY)
         case 'D':
             return np.all(grid[x:x + direction, y] == EMPTY)
         case 'U':
-            raise NotImplementedError()
+            return np.all(grid[x:x - direction:-1, y] == EMPTY)
 
 
-def go2wall(orientation, wall, x, y):
+def after_wrap(orientation, grid, x, y):
     match orientation:
         case 'R':
-            return Point(x, y + wall - 1)
+            return Point(x, find_first(grid[x, :], EMPTY))
         case 'L':
-            raise NotImplementedError()
+            return Point(x, grid.shape[1] - find_first(grid[x, ::-1], EMPTY) - 1)
         case 'D':
-            return Point(x + wall - 1, y)
+            return Point(find_first(grid[:, y], EMPTY), y)
         case 'U':
-            raise NotImplementedError()
+            return Point(grid.shape[0] - find_first(grid[::-1, y], EMPTY) - 1, y)
+
+
+def goes_outside_grid(orientation, direction, grid, x, y):
+    # if all empty, I just go there, if not, I wrap, so going outside of the grid must start wrapping logic
+    match orientation:
+        case 'R':
+            return y + direction >= grid.shape[1]
+        case 'L':
+            return y - direction < 0
+        case 'D':
+            return x + direction >= grid.shape[0]
+        case 'U':
+            return x - direction < 0
+
+
+def dist2grid_end(orientation, grid, x, y):
+    # if all empty, I just go there, if not, I wrap, so going outside of the grid must start wrapping logic
+    match orientation:
+        case 'R':
+            return grid.shape[1] - y
+        case 'L':
+            return y
+        case 'D':
+            return grid.shape[0] - x
+        case 'U':
+            return x
+
+
+def is_wall_after_wrap(orientation, grid, x, y):
+    match orientation:
+        case 'R':
+            return find_first(grid[x, :], WALL) < find_first(grid[x, :], EMPTY)
+        case 'L':
+            return find_first(grid[x, ::-1], WALL) < find_first(grid[x, ::-1], EMPTY)
+        case 'D':
+            return find_first(grid[:, y], WALL) < find_first(grid[:, y], EMPTY)
+        case 'U':
+            return find_first(grid[::-1, y], WALL) < find_first(grid[::-1, y], EMPTY)
+
+
+def move_by(orientation, x, y, steps):
+    match orientation:
+        case 'R':
+            return Point(x, y + steps)
+        case 'L':
+            return Point(x, y - steps)
+        case 'D':
+            return Point(x + steps, y)
+        case 'U':
+            return Point(x - steps, y)
 
 
 def move(grid, pos, orientation, direction):
@@ -71,21 +121,32 @@ def move(grid, pos, orientation, direction):
     x, y = pos
     wall = find_type(orientation, direction, grid, x, y, WALL)
     if wall > 0:
-        return go2wall(orientation, wall, x, y)
-    elif all_empty(orientation, direction, grid, x, y):
-        return Point(x, y + direction)
+        return move_by(orientation, x, y, wall - 1)
+    elif all_empty(orientation, direction, grid, x, y) and not goes_outside_grid(orientation, direction, grid, x, y):
+        return move_by(orientation, x, y, direction)
     else:
-        void = find_type(orientation, direction, grid, x, y, VOID)
-        remaining = direction - void
-        if remaining == 0:
-            return pos
+        if goes_outside_grid(orientation, direction, grid, x, y):
+            void = dist2grid_end(orientation, grid, x, y)
         else:
-            new_y = find_first(grid[x, :], EMPTY)
-            move()
+            void = find_type(orientation, direction, grid, x, y, VOID)
+        remaining = direction - void
+        if remaining == 0 or is_wall_after_wrap(orientation, grid, x, y):
+            return move_by(orientation, x, y, void - 1)
+        else:
+            pos = after_wrap(orientation, grid, x, y)
+            return move(grid, pos, orientation, remaining)
+
+
+def parse_directions(directions_str):
+    directions = reduce(add_or_new, directions_str, [])
+    if isinstance(directions[-1], str) and directions[-1].isnumeric():
+        directions[-1] = int(directions[-1])
+    return directions
+
 
 def execute_part1():
-    # input_file = "input.txt"
-    input_file = "test_input.txt"
+    input_file = "input.txt"
+    # input_file = "test_input.txt"
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         maze, directions_str = f.read().split('\n\n')
     rows = maze.split('\n')
@@ -96,59 +157,21 @@ def execute_part1():
         grid_line[:len(row)] += (np_row == ' ') * VOID
         grid_line[:len(row)] += (np_row == '#') * WALL
         grid_line[:len(row)] += (np_row == '.') * EMPTY
-    directions = reduce(add_or_new, directions_str, [])
+    directions = parse_directions(directions_str)
     pos = Point(0, int(np.argmax(grid[0, :] == EMPTY)))
-    orientations = ['U', 'R', 'D', 'L']
-    orient = 1
+    orientations = ['R', 'D', 'L', 'U']
+    orient = 0
     for direction in directions:
+        print(f'{direction=}')
         match direction:
             case int():
-                x, y = pos
-                match orientations[orient]:
-                    case 'R':
-                        wall = find_first(grid[x, y:y + direction], WALL)
-                        if wall > 0:
-                            pos = Point(x, y + wall - 1)
-                        elif np.all(grid[x, y:y + direction] == EMPTY):
-                            pos = Point(x, y + direction)
-                        else:
-                            void = find_first(grid[x, y:y + direction], VOID)
-                            remaining = direction - void
-                            if remaining > 0:
-                                ...
-                            appear_y = find_first(grid[x, :], EMPTY)
-                            wall = find_first(grid[x, appear_y:appear_y + remaining], WALL)
-                            if wall > 0:
-                                pos = Point(x, y + wall - 1)
-                            elif np.all(grid[x, appear_y:appear_y + remaining] == EMPTY):
-                                pos = Point(x, appear_y + remaining)
-                            else:
-                                ...
-                    case 'U':
-                        ...
-                    case 'D':
-                        wall = find_first(grid[x:x + direction, y], WALL)
-                        if wall > 0:
-                            pos = Point(x + wall - 1, y)
-                        elif np.all(grid[x:x + direction, y] == EMPTY):
-                            pos = Point(x + direction, y)
-                        else:
-                            void = find_first(grid[x: x + direction, y], VOID)
-                            remaining = direction - void
-                            appear_x = np.argmax(grid[:, x] == EMPTY)
-                            wall = find_first(grid[appear_x:appear_x + remaining, y], WALL)
-                            if wall > 0:
-                                pos = Point(x, y + wall - 1)
-                            elif np.all(grid[appear_x:appear_x + remaining, y] == EMPTY):
-                                pos = Point(appear_x + remaining, y)
-                            else:
-                                ...
-                    case 'L':
-                        ...
+                pos = move(grid, pos, orientations[orient], direction)
             case 'L':
                 orient = (orient - 1) % 4
             case 'R':
                 orient = (orient + 1) % 4
+    x, y = pos
+    return (x + 1) * 1_000 + (y + 1) * 4 + orient
 
 
 def execute_part2():
@@ -165,7 +188,9 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    # submit_day(res1, 22, 1)
+    submit_day(res1, 22, 1)
     # submit_day(res2, 22, 2)
     print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
+# wrong answer: 116284
+# That's not the right answer; your answer is too low.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Please wait one minute before trying again. (You guessed 116284.) [Return to Day 22]
