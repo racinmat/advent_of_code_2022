@@ -32,13 +32,13 @@ def find_first(row, comp):
 def find_type(orientation, direction, grid, x, y, val):
     match orientation:
         case 'R':
-            return find_first(grid[x, y:y + direction], val)
+            return find_first(grid[x, y:y + direction+1], val)
         case 'L':
-            return find_first(grid[x, y:max(y - direction, 0):-1], val)
+            return find_first(grid[x, y:max(y - direction-1, 0):-1], val)
         case 'D':
-            return find_first(grid[x:x + direction, y], val)
+            return find_first(grid[x:x + direction+1, y], val)
         case 'U':
-            return find_first(grid[x:max(x - direction, 0):-1, y], val)
+            return find_first(grid[x:max(x - direction-1, 0):-1, y], val)
 
 
 def all_empty(orientation, direction, grid, x, y):
@@ -125,10 +125,12 @@ def move(grid, pos, orientation, direction):
     elif all_empty(orientation, direction, grid, x, y) and not goes_outside_grid(orientation, direction, grid, x, y):
         return move_by(orientation, x, y, direction)
     else:
-        if goes_outside_grid(orientation, direction, grid, x, y):
+        void_coord = find_type(orientation, direction, grid, x, y, VOID)
+        # check that we really go outside and there is not explicit void before us
+        if goes_outside_grid(orientation, direction, grid, x, y) and void_coord == 0:
             void = dist2grid_end(orientation, grid, x, y)
         else:
-            void = find_type(orientation, direction, grid, x, y, VOID)
+            void = void_coord
         remaining = direction - void
         if remaining == 0 or is_wall_after_wrap(orientation, grid, x, y):
             return move_by(orientation, x, y, void - 1)
@@ -161,8 +163,7 @@ def execute_part1():
     pos = Point(0, int(np.argmax(grid[0, :] == EMPTY)))
     orientations = ['R', 'D', 'L', 'U']
     orient = 0
-    for direction in directions:
-        print(f'{direction=}')
+    for i, direction in enumerate(directions):
         match direction:
             case int():
                 pos = move(grid, pos, orientations[orient], direction)
@@ -188,7 +189,7 @@ if __name__ == '__main__':
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    submit_day(res1, 22, 1)
+    # submit_day(res1, 22, 1)
     # submit_day(res2, 22, 2)
     print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
