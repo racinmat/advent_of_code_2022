@@ -55,7 +55,7 @@ def all_empty(orientation, direction, grid, x, y):
             return np.all(grid[x:x - direction - 1:-1, y] == EMPTY)
 
 
-def after_wrap(orientation, grid, x, y):
+def after_wrap_plane(orientation, grid, x, y):
     match orientation:
         case 'R':
             return Point(x, find_first(grid[x, :], EMPTY))
@@ -65,6 +65,13 @@ def after_wrap(orientation, grid, x, y):
             return Point(find_first(grid[:, y], EMPTY), y)
         case 'U':
             return Point(grid.shape[0] - find_first(grid[::-1, y], EMPTY) - 1, y)
+
+
+def after_wrap_cube(orientations, orient, grid, x, y, wrappings, steps):
+    orientation = orientations[orient]
+    x_edge, y_edge = move_by(orientation, x, y, steps)
+    x_edge2, y_edge2, orient_new = wrappings[x_edge, y_edge, orient]
+    return Point(x_edge2, y_edge2), orient_new % 4
 
 
 def goes_outside_grid(orientation, direction, grid, x, y):
@@ -115,16 +122,17 @@ def move_by(orientation, x, y, steps):
             return Point(x - steps, y)
 
 
-def move(grid, pos, orientations, orient, direction, is_cube):
+def move(grid, pos, orientations, orient, direction, is_cube, wrappings):
+    assert not is_cube or len(wrappings) > 10
     orientation = orientations[orient]
     if direction == 0:
-        return pos
+        return orient, pos
     x, y = pos
     wall = find_type(orientation, direction, grid, x, y, WALL)
     if wall > 0:
-        return move_by(orientation, x, y, wall - 1)
+        return orient, move_by(orientation, x, y, wall - 1)
     elif all_empty(orientation, direction, grid, x, y) and not goes_outside_grid(orientation, direction, grid, x, y):
-        return move_by(orientation, x, y, direction)
+        return orient, move_by(orientation, x, y, direction)
     else:
         void_coord = find_type(orientation, direction, grid, x, y, VOID)
         # check that we really go outside and there is no explicit void before us
@@ -134,10 +142,13 @@ def move(grid, pos, orientations, orient, direction, is_cube):
             void = void_coord
         remaining = direction - void
         if is_wall_after_wrap(orientation, grid, x, y):
-            return move_by(orientation, x, y, void - 1)
+            return orient, move_by(orientation, x, y, void - 1)
         else:
-            pos = after_wrap(orientation, grid, x, y)
-            return move(grid, pos, orientations, orient, remaining, is_cube)
+            if is_cube:
+                pos, orient = after_wrap_cube(orientations, orient, grid, x, y, wrappings, void - 1)
+            else:
+                pos = after_wrap_plane(orientation, grid, x, y)
+            return move(grid, pos, orientations, orient, remaining, is_cube, wrappings)
 
 
 def parse_directions(directions_str):
@@ -159,20 +170,119 @@ def parse_grid(maze):
     return grid
 
 
-def run_maze(directions, grid, is_cube):
+def run_maze(directions, grid, is_cube, wrappings=None):
     pos = Point(0, int(np.argmax(grid[0, :] == EMPTY)))
     orientations = ['R', 'D', 'L', 'U']
     orient = 0
     for i, direction in enumerate(directions):
         match direction:
             case int():
-                orient, pos = move(grid, pos, orientations, orient, direction, is_cube)
+                orient, pos = move(grid, pos, orientations, orient, direction, is_cube, wrappings)
             case 'L':
                 orient = (orient - 1) % 4
             case 'R':
                 orient = (orient + 1) % 4
         # print(f'end of direction={direction}, position={pos.x},{pos.y}')
     return orient, pos
+
+
+def compute_wrappings(grid):
+    # just hard-coding it for test case and my case
+    smaller_side, larger_side = min(grid.shape), max(grid.shape)
+    assert larger_side * 3 == smaller_side * 4
+    side = smaller_side // 3
+    mappings = {}
+    if grid[grid.shape[0] - 1, 0] != VOID and grid[0, grid.shape[1] - 1] != VOID:
+        # my shape
+        # 1
+        x1 = side * 2 + 1
+        y2 = side + 1
+        for y1, x2 in zip(range(0, side), range(side * 2, side * 3)):
+            mappings[x1, y1, 3] = (x2, y2, +1)
+            mappings[x2, y2, 2] = (x1, y1, -1)
+        # 2
+        y1 = 1
+        y2 = side + 1
+        for x1, x2 in zip(range(side * 3, side * 4), range(side * 2 - 1, side - 1, -1)):
+            mappings[x1, y1, 2] = (x2, y2, +2)
+            mappings[x2, y2, 2] = (x1, y1, -2)
+        # 3
+        x1 = side * 4
+        x2 = 1
+        for y1, y2 in zip(range(0, side), range(side * 2, side * 3)):
+            mappings[x1, y1, 1] = (x2, y2, +0)
+            mappings[x2, y2, 3] = (x1, y1, -0)
+        # 4
+        x1 = side * 4
+        y2 = side * 3
+        for y1, x2 in zip(range(side, side * 2), range(0, side)):
+            mappings[x1, y1, 1] = (x2, y2, +1)
+            mappings[x2, y2, 0] = (x1, y1, -1)
+        # 5
+        y1 = side * 2
+        y2 = side * 3
+        for x1, x2 in zip(range(side * 3, side * 4), range(side * 2 - 1, side - 1, -1)):
+            mappings[x1, y1, 0] = (x2, y2, +2)
+            mappings[x2, y2, 0] = (x1, y1, -2)
+        # 6
+        y1 = side * 2
+        x2 = side * 2
+        for x1, y2 in zip(range(side * 2, side * 3), range(side * 2, side * 3)):
+            mappings[x1, y1, 0] = (x2, y2, +3)
+            mappings[x2, y2, 1] = (x1, y1, -3)
+        # 7
+        x1 = side + 1
+        y2 = side * 2 + 1
+        for y1, x2 in zip(range(side, side * 2), range(0, side)):
+            mappings[x1, y1, 3] = (x2, y2, +1)
+            mappings[x2, y2, 2] = (x1, y1, -1)
+    elif grid[grid.shape[0] - 1, grid.shape[1] - 1] != VOID and grid[0, grid.shape[1] - 1] == VOID:
+        # test shape
+        # 1
+        x1 = side
+        x2 = 0
+        for y1, y2 in zip(range(0, side), range(side * 3 - 1, side * 2 - 1, -1)):
+            mappings[x1, y1, 3] = (x2, y2, +2)
+            mappings[x2, y2, 3] = (x1, y1, -2)
+        # 2
+        x1 = side
+        y2 = side * 2
+        for y1, x2 in zip(range(side, side * 2), range(0, side)):
+            mappings[x1, y1, 3] = (x2, y2, +1)
+            mappings[x2, y2, 2] = (x1, y1, -1)
+        # 3
+        y1 = side * 3 - 1
+        y2 = side * 4 - 1
+        for x1, x2 in zip(range(0, side), range(side * 3 - 1, side * 2 - 1, -1)):
+            mappings[x1, y1, 0] = (x2, y2, +2)
+            mappings[x2, y2, 0] = (x1, y1, -2)
+        # 4
+        y1 = side * 3 - 1
+        x2 = side * 2
+        for x1, y2 in zip(range(side, side * 2), range(side * 4 - 1, side * 3 - 1, -1)):
+            mappings[x1, y1, 0] = (x2, y2, +1)
+            mappings[x2, y2, 3] = (x1, y1, -1)
+        # 5
+        y1 = 0
+        x2 = side * 3 - 1
+        for x1, y2 in zip(range(side, side * 2), range(side * 4, side * 3 - 1, -1)):
+            mappings[x1, y1, 2] = (x2, y2, +1)
+            mappings[x2, y2, 1] = (x1, y1, -1)
+        # 6
+        y1 = side * 2 - 1
+        y2 = side * 3 - 1
+        for x1, x2 in zip(range(0, side), range(side * 3 - 1, side * 2 - 1, -1)):
+            mappings[x1, y1, 1] = (x2, y2, +2)
+            mappings[x2, y2, 1] = (x1, y1, -2)
+        # 7
+        y1 = side * 2 - 1
+        x2 = side * 2
+        for x1, y2 in zip(range(side, side * 2), range(side * 3 - 1, side * 2 - 1, -1)):
+            mappings[x1, y1, 1] = (x2, y2, +3)
+            mappings[x2, y2, 2] = (x1, y1, -3)
+    else:
+        raise NotImplementedError()
+    return mappings
 
 
 def compute_password(orient, pos):
@@ -197,19 +307,20 @@ def execute_part2():
     with open(Path(dirname(__file__)) / input_file, "r", encoding="utf-8") as f:
         maze, directions_str = f.read().split('\n\n')
     grid = parse_grid(maze)
+    wrappings = compute_wrappings(grid)
     directions = parse_directions(directions_str)
-    orient, pos = run_maze(directions, grid, True)
+    orient, pos = run_maze(directions, grid, True, wrappings)
     return compute_password(orient, pos)
 
 
 if __name__ == '__main__':
     read_day(22)
     tic = time.perf_counter()
-    res1 = execute_part1()
+    # res1 = execute_part1()
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
-    submit_day(res1, 22, 1)
+    # submit_day(res1, 22, 1)
     # submit_day(res2, 22, 2)
-    print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
+    # print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
