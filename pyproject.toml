@@ -18,6 +18,7 @@ portion = "^2.3.0"
 shapely = "^2.0.0"
 statsmodels = "^0.13.5"
 nographs = "^3.0.0"
+sympy = "^1.11.1"
 
 [tool.poetry.dev-dependencies]
 psycopg2 = "^2.9.5"
