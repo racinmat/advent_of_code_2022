@@ -100,16 +100,21 @@ def dist2grid_end(orientation, grid, x, y):
             return x + 1
 
 
-def is_wall_after_wrap(orientation, grid, x, y):
-    match orientation:
-        case 'R':
-            return find_first(grid[x, :], WALL) < find_first(grid[x, :], EMPTY)
-        case 'L':
-            return find_first(grid[x, ::-1], WALL) < find_first(grid[x, ::-1], EMPTY)
-        case 'D':
-            return find_first(grid[:, y], WALL) < find_first(grid[:, y], EMPTY)
-        case 'U':
-            return find_first(grid[::-1, y], WALL) < find_first(grid[::-1, y], EMPTY)
+def is_wall_after_wrap(orientations, orient, grid, x, y, is_cube, wrappings, steps):
+    orientation = orientations[orient]
+    if is_cube:
+        pos, _ = after_wrap_cube(orientations, orient, grid, x, y, wrappings, steps)
+        return grid[tuple(pos)] == WALL
+    else:
+        match orientation:
+            case 'R':
+                return find_first(grid[x, :], WALL) < find_first(grid[x, :], EMPTY)
+            case 'L':
+                return find_first(grid[x, ::-1], WALL) < find_first(grid[x, ::-1], EMPTY)
+            case 'D':
+                return find_first(grid[:, y], WALL) < find_first(grid[:, y], EMPTY)
+            case 'U':
+                return find_first(grid[::-1, y], WALL) < find_first(grid[::-1, y], EMPTY)
 
 
 def move_by(orientation, x, y, steps):
@@ -143,7 +148,7 @@ def move(grid, pos, orientations, orient, direction, is_cube, wrappings):
         else:
             void = void_coord
         remaining = direction - void
-        if is_wall_after_wrap(orientation, grid, x, y):
+        if is_wall_after_wrap(orientations, orient, grid, x, y, is_cube, wrappings, void - 1):
             return orient, move_by(orientation, x, y, void - 1)
         else:
             if is_cube:
@@ -205,7 +210,7 @@ def compute_wrappings(grid):
         # 2
         y1 = side * 2 - 1
         y2 = side * 3 - 1
-        for x1, x2 in zip(range(side * 3, side * 4), range(side - 1, -1, -1)):
+        for x1, x2 in zip(range(side * 2, side * 3), range(side - 1, -1, -1)):
             mappings[x1, y1, 0] = (x2, y2, +2)
             mappings[x2, y2, 0] = (x1, y1, -2)
         # 3
@@ -323,6 +328,8 @@ if __name__ == '__main__':
     res2 = execute_part2()
     toc = time.perf_counter()
     # submit_day(res1, 22, 1)
-    # submit_day(res2, 22, 2)
+    submit_day(res2, 22, 2)
     # print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
+# wrong answer: 143020
+# That's not the right answer; your answer is too high.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Please wait one minute before trying again. (You guessed 143020.) [Return to Day 22]
