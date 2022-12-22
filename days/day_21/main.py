@@ -20,7 +20,6 @@ class Monkey(object):
     def value(self):
         if self.val is None:
             self.val = self.op()
-        print(f'monkey {self.name=} has {self.val=}')
         return self.val
 
 
