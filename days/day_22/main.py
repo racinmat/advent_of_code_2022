@@ -222,7 +222,7 @@ def compute_wrappings(grid):
         # 4
         y1 = 0
         x2 = 0
-        for x1, y2 in zip(range(side * 3, side * 4), range(side * 2 - 1, side - 1, -1)):
+        for x1, y2 in zip(range(side * 3, side * 4), range(side, side*2)):
             mappings[x1, y1, 2] = (x2, y2, +3)
             mappings[x2, y2, 3] = (x1, y1, -3)
         # 5
@@ -328,7 +328,7 @@ if __name__ == '__main__':
     res2 = execute_part2()
     toc = time.perf_counter()
     # submit_day(res1, 22, 1)
-    submit_day(res2, 22, 2)
+    # submit_day(res2, 22, 2)
     # print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
 # wrong answer: 143020
