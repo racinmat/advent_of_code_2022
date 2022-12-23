@@ -632,17 +632,6 @@ pytz = ">=2020.1"
 test = ["hypothesis (>=5.5.3)", "pytest (>=6.0)", "pytest-xdist (>=1.31)"]
 
 [[package]]
-name = "patch"
-version = "1.16"
-description = "Library to parse and apply unified diffs"
-category = "main"
-optional = false
-python-versions = "*"
-files = [
-    {file = "patch-1.16.zip", hash = "sha256:c62073f356cff054c8ac24496f1a3d7cfa137835c31e9af39a9f5292fd75bd9f"},
-]
-
-[[package]]
 name = "patsy"
 version = "0.5.3"
 description = "A Python package for describing statistical models and for building design matrices."
@@ -845,6 +834,30 @@ files = [
 
 [package.dependencies]
 wheel = "*"
+
+[[package]]
+name = "pytamer"
+version = "0.1.10"
+description = "TAMER API"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytamer-0.1.10-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:0ca249bd33e2cd03869f6a672930ec58d42237bd9879f4cfbaa5e9210f850cf1"},
+    {file = "pytamer-0.1.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6fef9deb26135cc21cf45feca7f1576c9c12cbcf76e484a237f5ea118d5e40e7"},
+    {file = "pytamer-0.1.10-cp310-cp310-win_amd64.whl", hash = "sha256:521b6c6563e210e746091ad34d96691688953b465841730618b43933ff25bc75"},
+    {file = "pytamer-0.1.10-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a305a4b45dee49d53d0cab875050715bb002b1d03970a746b9a0fd38744c86aa"},
+    {file = "pytamer-0.1.10-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b01aee6d5bb93039ace9368a0dec9710fb86ab48b4aa6968032a50577f445291"},
+    {file = "pytamer-0.1.10-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:d26d4b797119fd5c6119445dfcc2cae81d0a66972506449387de6fcf1d1e5702"},
+    {file = "pytamer-0.1.10-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0511edc2aa658891eb6ec8b4b43fc7274a99f302d14b3524a23b0c94d025a454"},
+    {file = "pytamer-0.1.10-cp37-cp37m-win_amd64.whl", hash = "sha256:086261c73125861b906e4c6a112a9a6933f5e914fb07fefd279d207d9d63873b"},
+    {file = "pytamer-0.1.10-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:23f9c7f836f43662257689043b2eedb91239cea012b3ab28de7ebd72b5539623"},
+    {file = "pytamer-0.1.10-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1fdfa23f3b30150ec4b8088e546ae3ef2cef6069c982fd9807ac320f121d5bbd"},
+    {file = "pytamer-0.1.10-cp38-cp38-win_amd64.whl", hash = "sha256:221778500a694c1180b4553dbf52ad3c400aae8830abda02531dda29dbd839b9"},
+    {file = "pytamer-0.1.10-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:eb4af80e94e374bec7fc8d7a40cbe75b80758fceaa7e56de603c708d8bbf13fe"},
+    {file = "pytamer-0.1.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:52e1fa8a7d545f8df520ec8175a2f5e4b336d227e89cbaf4813a35feef264ac5"},
+    {file = "pytamer-0.1.10-cp39-cp39-win_amd64.whl", hash = "sha256:8d293eb1e5fd0e616bd5090f8e10836b67989524bc9f4dc5e972d6b5aeaf5d2a"},
+]
 
 [[package]]
 name = "python-dateutil"
@@ -1263,76 +1276,90 @@ test = ["pytest (>=4.3)", "pytest-mock (>=3.3)"]
 
 [[package]]
 name = "unified-planning"
-version = "0.4.2"
+version = "0.5.0"
 description = "Unified Planning Framework"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "unified_planning-0.4.2-py3-none-any.whl", hash = "sha256:a920c3c92f0c748cb29d5abad0a1eb3f606930bae655b1d0d3247257b5dcc720"},
-    {file = "unified_planning-0.4.2.tar.gz", hash = "sha256:f801a6521a2b9c4007a0e76a9a8b80586bf2b96ecff5d355d9a20b12332c0e6b"},
+    {file = "unified_planning-0.5.0-py3-none-any.whl", hash = "sha256:912601b47a8cebbde2e7e05573a6223092f87fec1c4a36405f0d3cb94655a6f4"},
+    {file = "unified_planning-0.5.0.tar.gz", hash = "sha256:dcaf35db3d23acfa35b42b2e58805e659d08c215e95ad87ef456ac257bb37bef"},
 ]
 
 [package.dependencies]
 networkx = "*"
 pyparsing = "*"
 tarski = {version = "*", extras = ["arithmetic"], optional = true, markers = "extra == \"tarski\""}
-up-enhsp = {version = "0.0.5", optional = true, markers = "extra == \"enhsp\""}
-up-fast-downward = {version = "0.0.2", optional = true, markers = "extra == \"fast-downward\""}
-up-pyperplan = {version = "0.2.0", optional = true, markers = "extra == \"pyperplan\""}
+up-enhsp = {version = "0.0.9", optional = true, markers = "extra == \"enhsp\""}
+up-fast-downward = {version = "0.0.6", optional = true, markers = "extra == \"fast-downward\""}
+up-pyperplan = {version = "0.3.0", optional = true, markers = "extra == \"pyperplan\""}
+up-tamer = {version = "0.3.0", optional = true, markers = "extra == \"tamer\""}
 
 [package.extras]
 dev = ["mypy", "pytest", "pytest-cov", "tarski[arithmetic]"]
-engines = ["tarski[arithmetic]", "up-enhsp (==0.0.5)", "up-fast-downward (==0.0.2)", "up-pyperplan (==0.2.0)", "up-tamer (==0.2.0)"]
-enhsp = ["up-enhsp (==0.0.5)"]
-fast-downward = ["up-fast-downward (==0.0.2)"]
+engines = ["tarski[arithmetic]", "up-enhsp (==0.0.9)", "up-fast-downward (==0.0.6)", "up-pyperplan (==0.3.0)", "up-tamer (==0.3.0)"]
+enhsp = ["up-enhsp (==0.0.9)"]
+fast-downward = ["up-fast-downward (==0.0.6)"]
 grpc = ["grpc-stubs", "grpcio", "grpcio-tools"]
-pyperplan = ["up-pyperplan (==0.2.0)"]
-tamer = ["up-tamer (==0.2.0)"]
+pyperplan = ["up-pyperplan (==0.3.0)"]
+tamer = ["up-tamer (==0.3.0)"]
 tarski = ["tarski[arithmetic]"]
 
 [[package]]
 name = "up-enhsp"
-version = "0.0.5"
+version = "0.0.9"
 description = "up_enhsp"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "up_enhsp-0.0.5-py3-none-any.whl", hash = "sha256:76af924ba0c1955a3309a4487c0244470c3a9d51d73240e98a3c6845a102ca3b"},
-    {file = "up_enhsp-0.0.5.tar.gz", hash = "sha256:0ca0072968d97956bedb92f696386dcda398876e6ba3971a76a9a781778ed0ed"},
+    {file = "up_enhsp-0.0.9-py3-none-any.whl", hash = "sha256:8e9f0b8296cc79325316952a05dc17b9bc4b890a638b16b2477617b7fd690903"},
+    {file = "up_enhsp-0.0.9.tar.gz", hash = "sha256:3758893a3c170e591d503517c9b7c213ef3cf087340b0403731bc0eb5bd670f4"},
 ]
 
 [[package]]
 name = "up-fast-downward"
-version = "0.0.2"
+version = "0.0.6"
 description = "Unified Planning Integration of the Fast Downward planning system"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "up_fast_downward-0.0.2-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:865f328e3e0488a41b8f7a7f6360000697f0dab83a65aa5646e9866127de660c"},
-    {file = "up_fast_downward-0.0.2-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5a1bd7161f8a5541c844c7b3b95933fd13da8d7c1bc8dcf4fcac1350a77b959"},
-    {file = "up_fast_downward-0.0.2-py3-none-win_amd64.whl", hash = "sha256:442334b1f06a41248a976e80f2656acc24938b18a72093f48e300432ed347782"},
+    {file = "up_fast_downward-0.0.6-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:f7e76fc6a88e83f66ca315cf4d003481cf83179dde7e6d334407bc49368fcbcc"},
+    {file = "up_fast_downward-0.0.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:da3d06698345ff1c2999183a08a6457712753d87c96b4b7011308e102ab519a0"},
+    {file = "up_fast_downward-0.0.6-py3-none-win32.whl", hash = "sha256:d49f9079709005c4ba797233d299e90ac63f42948334fdf6b8912605c269997b"},
+    {file = "up_fast_downward-0.0.6-py3-none-win_amd64.whl", hash = "sha256:47506f72e27d4bfaf153f28149952a4fd9599f78ec84ebe47aad7e07a6cf440b"},
 ]
-
-[package.dependencies]
-patch = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "up-pyperplan"
-version = "0.2.0"
+version = "0.3.0"
 description = "up_pyperplan"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "up_pyperplan-0.2.0-py3-none-any.whl", hash = "sha256:1f00da2951278213c8020dbe35a2086294b8478406ef69fe4944e639dbf43e4c"},
-    {file = "up_pyperplan-0.2.0.tar.gz", hash = "sha256:578fd0ac31b140fe59dd877b7504a4e4ecbca69e44ed09058d375dd20a47866a"},
+    {file = "up_pyperplan-0.3.0-py3-none-any.whl", hash = "sha256:dbbda61829fbb21ce57755a22c5dc6ab09b74850f3cc25b411d635f012b7abe7"},
+    {file = "up_pyperplan-0.3.0.tar.gz", hash = "sha256:cefe0fe216be7c5877573df50ecb977f9dfc2e16f41ae54134571e00ac9da7d6"},
 ]
 
 [package.dependencies]
 pyperplan = "2.1"
+
+[[package]]
+name = "up-tamer"
+version = "0.3.0"
+description = "up_tamer"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "up_tamer-0.3.0-py3-none-any.whl", hash = "sha256:98525e7d5d86860737deb4c39ce9fab11f857d203ede64851c6c399b91b1d722"},
+    {file = "up_tamer-0.3.0.tar.gz", hash = "sha256:55d3b67472b942b01bf65c5bbaab6c589e9273fdb2d997364f395c40e5752a18"},
+]
+
+[package.dependencies]
+pytamer = "0.1.10"
 
 [[package]]
 name = "urllib3"
@@ -1369,4 +1396,4 @@ test = ["pytest (>=3.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d29c5b6e86527aed34ec2881dca7a19698b1704cb6d56e17ff9e0feb2afed027"
+content-hash = "e5e60981881648fa02f4a20518045c8a373aa8b15168f55c5e0edc1ada3c0072"

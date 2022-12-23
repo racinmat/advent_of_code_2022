@@ -4,9 +4,10 @@ from os.path import dirname
 from pathlib import Path
 
 from unified_planning import model
+from unified_planning.engines import PlanGenerationResultStatus
 from unified_planning.io import PDDLWriter
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
-from unified_planning.shortcuts import UserType, BoolType, Not, IntType, Equals, GT, Times
+from unified_planning.shortcuts import UserType, BoolType, Not, IntType, Equals, GT, Times, OneshotPlanner
 
 from misc import read_day, prettytime
 
@@ -101,7 +102,7 @@ def execute_part1():
     problem.set_initial_value(total_points, 0)
     problem.set_initial_value(remaining_time, 30)
     problem.add_goal(Equals(remaining_time, 0))
-    problem.add_quality_metric(model.metrics.MaximizeExpressionOnFinalState(total_points))
+    problem.add_quality_metric(model.metrics.MaximizeExpressionOnFinalState(total_points()))
 
     w = PDDLWriter(problem)
     w.write_domain('valves_domain.pddl')
