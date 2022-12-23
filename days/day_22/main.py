@@ -323,13 +323,13 @@ def execute_part2():
 if __name__ == '__main__':
     read_day(22)
     tic = time.perf_counter()
-    # res1 = execute_part1()
+    res1 = execute_part1()
     tac = time.perf_counter()
     res2 = execute_part2()
     toc = time.perf_counter()
     # submit_day(res1, 22, 1)
     # submit_day(res2, 22, 2)
-    # print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
+    print(f"day 22 part 1 in {prettytime(tac - tic)}, answer: {res1}")
     print(f"day 22 part 2 in {prettytime(toc - tac)}, answer: {res2}")
 # wrong answer: 143020
 # That's not the right answer; your answer is too high.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Please wait one minute before trying again. (You guessed 143020.) [Return to Day 22]
