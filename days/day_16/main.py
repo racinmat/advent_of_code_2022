@@ -7,7 +7,7 @@ from unified_planning import model
 from unified_planning.engines import PlanGenerationResultStatus
 from unified_planning.io import PDDLWriter
 from unified_planning.model import Fluent, InstantaneousAction, Object, Problem
-from unified_planning.shortcuts import UserType, BoolType, Not, IntType, Equals, GT, Times, OneshotPlanner
+from unified_planning.shortcuts import UserType, BoolType, Not, IntType, Equals, GT, Times, OneshotPlanner, Minus
 
 from misc import read_day, prettytime
 
@@ -35,7 +35,7 @@ def execute_part1():
     is_connected = Fluent(
         "is_connected", BoolType(), location_1=location, location_2=location
     )
-    # formulating as valve closed so I don't have negative preconditions
+    # formulating as valve closed, so I don't have negative preconditions
     valve_closed = Fluent(
         "valve_closed", BoolType(), location=location
     )
@@ -48,6 +48,9 @@ def execute_part1():
     l_to = move.parameter("l_to")
     at = open_valve.parameter("at")
 
+    # max points per action calculation
+    max_points_per_action = (30 * max(v['rate'] for v in valves)) + 1
+
     move.add_precondition(GT(remaining_time, 0))
     move.add_precondition(position(l_from))
     # negative preconditions are hard, should not be needed, if position is removed correctly
@@ -57,12 +60,13 @@ def execute_part1():
     move.add_effect(position(l_from), False)
     move.add_effect(position(l_to), True)
     move.add_decrease_effect(remaining_time, 1)
+    move.add_increase_effect(total_points, max_points_per_action)
 
     open_valve.add_precondition(GT(remaining_time, 0))
     open_valve.add_precondition(position(at))
     open_valve.add_precondition(valve_closed(at))
     open_valve.add_decrease_effect(remaining_time, 1)
-    open_valve.add_increase_effect(total_points, Times(flow_rate(at), remaining_time))
+    open_valve.add_increase_effect(total_points, Minus(max_points_per_action, Times(flow_rate(at), remaining_time)))
     open_valve.add_effect(valve_closed(at), False)
 
     # Populating the problem with initial state and goals
@@ -102,7 +106,8 @@ def execute_part1():
     problem.set_initial_value(total_points, 0)
     problem.set_initial_value(remaining_time, 30)
     problem.add_goal(Equals(remaining_time, 0))
-    problem.add_quality_metric(model.metrics.MaximizeExpressionOnFinalState(total_points()))
+    problem.add_quality_metric(model.metrics.MinimizeExpressionOnFinalState(total_points()))
+    # problem.add_quality_metric(model.metrics.MinimizeActionCosts(total_points()))
 
     w = PDDLWriter(problem)
     w.write_domain('valves_domain.pddl')
@@ -117,7 +122,8 @@ def execute_part1():
                 )
     with open('valves_problem.pddl', 'w', encoding='utf-8') as f:
         f.write(problem_str.replace('\r\n', '\n')
-                .replace('integer[0, inf] total_points', '(total_points)')
+                # .replace('integer[0, inf] total_points', '(total_points)')
+                .replace('minimize total_points', 'minimize (total_points)')
                 )
 
     # with OneshotPlanner(problem_kind=problem.kind, optimality_guarantee=PlanGenerationResultStatus.SOLVED_OPTIMALLY) as planner:
@@ -149,8 +155,12 @@ if __name__ == '__main__':
 # todo: search https://github.com/nergmada/planning-wiki/search?p=2&q=numeric which good numeric planners are there
 # try some of suggested here https://stackoverflow.com/a/71421101/5224881
 
-# todo: instead of maximizing score, minimize it.
-# if we would have cost (max score+1) for all actions, both opening valves and moving, and valve opening would have
-# price the high cost - the points we obtain, and we still stop after 30 actions, it should work
 # usually this maximization -> minimization leads to preference of lower amount of edges/shorter path, but now we need
 # strictly 30 actions/edges.
+
+# reworked from manimization to minimization, but no solver is able to find the optimal solution for the test input
+# metric ff fails, and enhsp finds suboptimal solution, and the optic-clp runs for long, and finds even worse plan
+
+# maybe I need to prune it myself. Remove the opening of zero-rate pipes and turn moving to neighbour to movement
+# between all pairs, but with different time decrements, so the search for shortest path between all pairs is done
+# in advance
